@@ -668,6 +668,7 @@
   }
 </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
   <div class="grain"></div>
@@ -766,22 +767,41 @@
     { id:'wormhole',    name:'Червоточина',              desc:'+45K к силе клика',        icon:'fa-ghost',          type:'click', value:45000, baseCost:95000000, costMult:1.15 },
     { id:'multiverse',  name:'Мультиверсальный коллайдер',desc:'+45K энергии/сек',        icon:'fa-infinity',       type:'auto',  value:45000, baseCost:190000000,costMult:1.16 },
     { id:'bigbang',     name:'Большой взрыв',            desc:'+300K к силе клика',       icon:'fa-meteor',         type:'click', value:300000,baseCost:950000000,costMult:1.15 },
-    { id:'omniverse',   name:'Омниверс',                 desc:'+300K энергии/сек',        icon:'fa-globe',          type:'auto',  value:300000,baseCost:1900000000,costMult:1.16 }
+    { id:'omniverse',   name:'Омниверс',                 desc:'+300K энергии/сек',        icon:'fa-globe',          type:'auto',  value:300000,baseCost:1900000000,costMult:1.16 },
+    { id:'neutron',     name:'Нейтронный синтезатор',    desc:'+2M к силе клика',         icon:'fa-atom',           type:'click', value:2000000,baseCost:9500000000,costMult:1.15 },
+    { id:'pulsar',      name:'Пульсарная станция',       desc:'+2M энергии/сек',          icon:'fa-satellite-dish', type:'auto',  value:2000000,baseCost:19000000000,costMult:1.16 },
+    { id:'hyperion',    name:'Гиперион-ядро',            desc:'+15M к силе клика',        icon:'fa-hurricane',      type:'click', value:15000000,baseCost:95000000000,costMult:1.15 },
+    { id:'void',        name:'Пустотный насос',          desc:'+15M энергии/сек',         icon:'fa-circle-notch',   type:'auto',  value:15000000,baseCost:190000000000,costMult:1.16 },
+    { id:'primordial',  name:'Первозданный кристалл',    desc:'+120M к силе клика',       icon:'fa-gem',            type:'click', value:120000000,baseCost:950000000000,costMult:1.15 },
+    { id:'eternity',    name:'Вечный двигатель',         desc:'+120M энергии/сек',        icon:'fa-clock',          type:'auto',  value:120000000,baseCost:1900000000000,costMult:1.16 }
   ];
 
   var ACHIEVEMENTS = [
-    { id:'a1',  threshold:50,          name:'Первая искра' },
-    { id:'a2',  threshold:1000,        name:'Разогрев реактора' },
-    { id:'a3',  threshold:25000,       name:'Стабильный поток' },
-    { id:'a4',  threshold:250000,      name:'Критическая масса' },
-    { id:'a5',  threshold:2500000,     name:'Термоядерный синтез' },
-    { id:'a6',  threshold:25000000,    name:'Событие сверхновой' },
-    { id:'a7',  threshold:150000000,   name:'Гравитационный коллапс' },
-    { id:'a8',  threshold:800000000,   name:'Квазарное излучение' },
-    { id:'a9',  threshold:5000000000,  name:'Поглощение галактики' },
-    { id:'a10', threshold:30000000000, name:'Большой взрыв 2.0' },
-    { id:'a11', threshold:200000000000,name:'Теория всего' },
-    { id:'a12', threshold:1000000000000,name:'Бог энергии' }
+    { id:'a1',  threshold:50,           name:'Первая искра' },
+    { id:'a2',  threshold:1000,         name:'Разогрев реактора' },
+    { id:'a3',  threshold:25000,        name:'Стабильный поток' },
+    { id:'a4',  threshold:250000,       name:'Критическая масса' },
+    { id:'a5',  threshold:2500000,      name:'Термоядерный синтез' },
+    { id:'a6',  threshold:25000000,     name:'Событие сверхновой' },
+    { id:'a7',  threshold:150000000,    name:'Гравитационный коллапс' },
+    { id:'a8',  threshold:800000000,    name:'Квазарное излучение' },
+    { id:'a9',  threshold:5000000000,   name:'Поглощение галактики' },
+    { id:'a10', threshold:30000000000,  name:'Большой взрыв 2.0' },
+    { id:'a11', threshold:200000000000, name:'Теория всего' },
+    { id:'a12', threshold:1000000000000,name:'Бог энергии' },
+    { id:'a13', threshold:5000000000000,name:'Повелитель материи' },
+    { id:'a14', threshold:25000000000000,name:'Энтропийный инвертор' },
+    { id:'a15', threshold:100000000000000,name:'Коллапс пространства' },
+    { id:'a16', threshold:500000000000000,name:'Верховный архитектор' },
+    { id:'a17', threshold:2500000000000000,name:'Пробуждение сознания' },
+    { id:'a18', threshold:10000000000000000,name:'Титан энергии' },
+    { id:'a19', threshold:50000000000000000,name:'Матрица вселенной' },
+    { id:'a20', threshold:250000000000000000,name:'Хронос' },
+    { id:'a21', threshold:1000000000000000000,name:'Абсолют' },
+    { id:'a22', threshold:5000000000000000000,name:'Начало и конец' },
+    { id:'a23', threshold:25000000000000000000,name:'Вне времени' },
+    { id:'a24', threshold:100000000000000000000,name:'Первопричина' },
+    { id:'a25', threshold:500000000000000000000,name:'Бесконечность' }
   ];
 
   var state = {
