@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -625,6 +624,36 @@
     font-size:0.76rem;
   }
 
+
+  /* ===== COUNTER ROLL ANIMATION ===== */
+  .counter-roll{
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+    height:1.15em;
+    line-height:1.15em;
+    vertical-align:bottom;
+  }
+  .counter-roll .roll-old,
+  .counter-roll .roll-new{
+    display:block;
+    transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), opacity 0.22s ease;
+  }
+  .counter-roll .roll-new{
+    position:absolute;
+    top:0; left:0; right:0;
+    transform:translateY(110%);
+    opacity:0;
+  }
+  .counter-roll.anim .roll-old{
+    transform:translateY(-110%);
+    opacity:0;
+  }
+  .counter-roll.anim .roll-new{
+    transform:translateY(0);
+    opacity:1;
+  }
+
   @media (max-width: 860px){
     .game{ grid-template-columns:1fr; }
     .upgrades-panel{ max-height:none; }
@@ -638,6 +667,7 @@
     .core-substats{ gap:14px; font-size:0.8rem; }
   }
 </style>
+<base target="_blank">
 </head>
 <body>
   <div class="grain"></div>
@@ -661,7 +691,7 @@
   <main class="game">
     <section class="core-stage" id="coreStage">
       <div class="core-readout">
-        <div class="core-value num-display" id="energyValue">0</div>
+        <div class="core-value num-display counter-roll" id="energyValue">0</div>
         <div class="core-label">единиц энергии</div>
       </div>
 
@@ -721,23 +751,37 @@
   var SAVE_KEY = 'energosphere-save-v1';
 
   var UPGRADES = [
-    { id:'stabilizer', name:'Стабилизатор поля', desc:'+1 к силе клика', icon:'fa-hand-pointer', type:'click', value:1,   baseCost:15,     costMult:1.15 },
-    { id:'turbine',    name:'Микротурбина',       desc:'+1 энергии/сек', icon:'fa-fan',          type:'auto',  value:1,   baseCost:60,     costMult:1.16 },
-    { id:'catalyst',   name:'Катализатор реакции', desc:'+8 к силе клика', icon:'fa-flask',       type:'click', value:8,   baseCost:400,    costMult:1.15 },
-    { id:'condenser',  name:'Плазменный конденсатор', desc:'+8 энергии/сек', icon:'fa-battery-full', type:'auto', value:8, baseCost:900,    costMult:1.16 },
-    { id:'injector',   name:'Инжектор изотопов',   desc:'+45 к силе клика', icon:'fa-syringe',    type:'click', value:45,  baseCost:6500,   costMult:1.15 },
-    { id:'thermo',     name:'Термоядерный модуль', desc:'+45 энергии/сек', icon:'fa-fire-burner', type:'auto',  value:45,  baseCost:14000,  costMult:1.16 },
-    { id:'amplifier',  name:'Квантовый усилитель', desc:'+220 к силе клика', icon:'fa-bolt',      type:'click', value:220, baseCost:90000,  costMult:1.15 },
-    { id:'antimatter', name:'Антиматериальный реактор', desc:'+220 энергии/сек', icon:'fa-radiation', type:'auto', value:220, baseCost:180000, costMult:1.16 }
+    { id:'stabilizer',  name:'Стабилизатор поля',        desc:'+1 к силе клика',          icon:'fa-hand-pointer',   type:'click', value:1,     baseCost:15,       costMult:1.15 },
+    { id:'turbine',     name:'Микротурбина',             desc:'+1 энергии/сек',           icon:'fa-fan',            type:'auto',  value:1,     baseCost:60,       costMult:1.16 },
+    { id:'catalyst',    name:'Катализатор реакции',      desc:'+8 к силе клика',          icon:'fa-flask',          type:'click', value:8,     baseCost:400,      costMult:1.15 },
+    { id:'condenser',   name:'Плазменный конденсатор',   desc:'+8 энергии/сек',           icon:'fa-battery-full',   type:'auto',  value:8,     baseCost:900,      costMult:1.16 },
+    { id:'injector',    name:'Инжектор изотопов',        desc:'+45 к силе клика',         icon:'fa-syringe',        type:'click', value:45,    baseCost:6500,     costMult:1.15 },
+    { id:'thermo',      name:'Термоядерный модуль',      desc:'+45 энергии/сек',          icon:'fa-fire-burner',    type:'auto',  value:45,    baseCost:14000,    costMult:1.16 },
+    { id:'amplifier',   name:'Квантовый усилитель',      desc:'+220 к силе клика',        icon:'fa-bolt',           type:'click', value:220,   baseCost:90000,    costMult:1.15 },
+    { id:'antimatter',  name:'Антиматериальный реактор', desc:'+220 энергии/сек',         icon:'fa-radiation',      type:'auto',  value:220,   baseCost:180000,   costMult:1.16 },
+    { id:'laser',       name:'Гамма-лазер',              desc:'+1.2K к силе клика',       icon:'fa-bullseye',       type:'click', value:1200,  baseCost:950000,   costMult:1.15 },
+    { id:'singularity', name:'Чёрная дыра-генератор',    desc:'+1.2K энергии/сек',        icon:'fa-circle-dot',     type:'auto',  value:1200,  baseCost:1900000,  costMult:1.16 },
+    { id:'overclock',   name:'Разгон ядра',              desc:'+7K к силе клика',         icon:'fa-gauge-high',     type:'click', value:7000,  baseCost:9500000,  costMult:1.15 },
+    { id:'dyson',       name:'Сфера Дайсона',            desc:'+7K энергии/сек',          icon:'fa-sun',            type:'auto',  value:7000,  baseCost:19000000, costMult:1.16 },
+    { id:'wormhole',    name:'Червоточина',              desc:'+45K к силе клика',        icon:'fa-ghost',          type:'click', value:45000, baseCost:95000000, costMult:1.15 },
+    { id:'multiverse',  name:'Мультиверсальный коллайдер',desc:'+45K энергии/сек',        icon:'fa-infinity',       type:'auto',  value:45000, baseCost:190000000,costMult:1.16 },
+    { id:'bigbang',     name:'Большой взрыв',            desc:'+300K к силе клика',       icon:'fa-meteor',         type:'click', value:300000,baseCost:950000000,costMult:1.15 },
+    { id:'omniverse',   name:'Омниверс',                 desc:'+300K энергии/сек',        icon:'fa-globe',          type:'auto',  value:300000,baseCost:1900000000,costMult:1.16 }
   ];
 
   var ACHIEVEMENTS = [
-    { id:'a1', threshold:50,        name:'Первая искра' },
-    { id:'a2', threshold:1000,      name:'Разогрев реактора' },
-    { id:'a3', threshold:25000,     name:'Стабильный поток' },
-    { id:'a4', threshold:250000,    name:'Критическая масса' },
-    { id:'a5', threshold:2500000,   name:'Термоядерный синтез' },
-    { id:'a6', threshold:25000000,  name:'Событие сверхновой' }
+    { id:'a1',  threshold:50,          name:'Первая искра' },
+    { id:'a2',  threshold:1000,        name:'Разогрев реактора' },
+    { id:'a3',  threshold:25000,       name:'Стабильный поток' },
+    { id:'a4',  threshold:250000,      name:'Критическая масса' },
+    { id:'a5',  threshold:2500000,     name:'Термоядерный синтез' },
+    { id:'a6',  threshold:25000000,    name:'Событие сверхновой' },
+    { id:'a7',  threshold:150000000,   name:'Гравитационный коллапс' },
+    { id:'a8',  threshold:800000000,   name:'Квазарное излучение' },
+    { id:'a9',  threshold:5000000000,  name:'Поглощение галактики' },
+    { id:'a10', threshold:30000000000, name:'Большой взрыв 2.0' },
+    { id:'a11', threshold:200000000000,name:'Теория всего' },
+    { id:'a12', threshold:1000000000000,name:'Бог энергии' }
   ];
 
   var state = {
@@ -831,8 +875,33 @@
     stats = computeStats();
   }
 
+  var lastEnergyText = '0';
+  var energyAnimTimer = null;
+
+  function setEnergyAnimated(newText){
+    if(newText === lastEnergyText) return;
+    lastEnergyText = newText;
+    if(energyAnimTimer) clearTimeout(energyAnimTimer);
+
+    var oldText = lastEnergyText || '0';
+    energyValueEl.innerHTML = '<span class="roll-old">' + oldText + '</span><span class="roll-new">' + newText + '</span>';
+    energyValueEl.classList.add('counter-roll');
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        energyValueEl.classList.add('anim');
+      });
+    });
+
+    energyAnimTimer = setTimeout(function(){
+      energyValueEl.textContent = newText;
+      energyValueEl.classList.remove('counter-roll','anim');
+      energyAnimTimer = null;
+    }, 300);
+  }
+
   function renderReadouts(){
-    energyValueEl.textContent = formatNumber(state.energy);
+    setEnergyAnimated(formatNumber(state.energy));
     lifetimeValueEl.textContent = formatNumber(state.totalEarned);
     clickPowerValueEl.textContent = formatNumber(stats.clickPower);
     epsValueEl.textContent = formatNumber(stats.eps);
