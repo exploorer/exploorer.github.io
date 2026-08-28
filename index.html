@@ -1,1112 +1,569 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Энергоядро</title>
-<meta name="description" content="Разгони реактор до предела. Кликер-игра про добычу энергии, модернизацию и цепную реакцию.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Unbounded:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  :root{
-    --bg-0:#0a0c0f;
-    --bg-1:#12151a;
-    --bg-2:#1a1e24;
-    --panel: rgba(255,255,255,0.035);
-    --panel-strong: rgba(255,255,255,0.055);
-    --border: rgba(255,255,255,0.09);
-    --text-hi:#f2efe6;
-    --text-lo:#8d94a1;
-    --text-faint:#5a6070;
-    --amber:#ff9d3d;
-    --amber-2:#ffc069;
-    --amber-soft: rgba(255,157,61,0.14);
-    --teal:#39d6b8;
-    --teal-soft: rgba(57,214,184,0.14);
-    --danger:#ff6161;
-    --shadow-deep: 0 30px 60px -20px rgba(0,0,0,0.6);
-  }
-
-  html,body{
-    background: var(--bg-0);
-    color: var(--text-hi);
-    font-family:'IBM Plex Sans', 'Segoe UI', sans-serif;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-
-  body{
-    background:
-      radial-gradient(ellipse 900px 600px at 50% -10%, rgba(255,157,61,0.09), transparent 60%),
-      radial-gradient(ellipse 700px 500px at 100% 100%, rgba(57,214,184,0.06), transparent 60%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px),
-      var(--bg-0);
-    position:relative;
-  }
-
-  .grain{
-    position:fixed;
-    inset:0;
-    z-index:1;
-    pointer-events:none;
-    opacity:0.05;
-    mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
-
-  a{ color:inherit; }
-
-  h1,h2,h3, .num-display{
-    font-family:'Unbounded', 'IBM Plex Sans', sans-serif;
-  }
-
-  /* ===== TOPBAR ===== */
-  .topbar{
-    position:relative;
-    z-index:10;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:20px;
-    max-width:1180px;
-    margin:0 auto;
-    padding:26px 24px 10px;
-    flex-wrap:wrap;
-  }
-
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .brand-icon{
-    width:38px; height:38px;
-    border-radius:10px;
-    background:linear-gradient(145deg, var(--amber), #c9600f);
-    display:flex; align-items:center; justify-content:center;
-    color:#1a0e02;
-    font-size:17px;
-    box-shadow:0 6px 18px -4px rgba(255,157,61,0.55);
-  }
-
-  .brand-name{
-    font-weight:800;
-    font-size:1.05rem;
-    letter-spacing:0.02em;
-  }
-
-  .brand-name span{ color:var(--amber); }
-
-  .topbar-right{
-    display:flex;
-    align-items:center;
-    gap:18px;
-  }
-
-  .lifetime-chip{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    line-height:1.2;
-  }
-
-  .lifetime-chip .lbl{
-    font-size:0.68rem;
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-    color:var(--text-faint);
-  }
-
-  .lifetime-chip .val{
-    font-family:'Unbounded';
-    font-weight:700;
-    font-size:0.95rem;
-    color:var(--text-lo);
-  }
-
-  .icon-btn{
-    width:40px; height:40px;
-    border-radius:10px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    color:var(--text-lo);
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    transition:all 0.25s ease;
-    font-size:15px;
-  }
-
-  .icon-btn:hover{
-    color:var(--danger);
-    border-color:rgba(255,97,97,0.35);
-    background:rgba(255,97,97,0.08);
-    transform:rotate(-40deg);
-  }
-
-  /* ===== LAYOUT ===== */
-  .game{
-    position:relative;
-    z-index:10;
-    max-width:1180px;
-    margin:0 auto;
-    padding:20px 24px 40px;
-    display:grid;
-    grid-template-columns:1.15fr 0.85fr;
-    gap:34px;
-    align-items:start;
-  }
-
-  /* ===== CORE STAGE ===== */
-  .core-stage{
-    position:relative;
-    background:linear-gradient(180deg, var(--panel), rgba(255,255,255,0.01));
-    border:1px solid var(--border);
-    border-radius:26px;
-    padding:40px 24px 34px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    overflow:hidden;
-    box-shadow: var(--shadow-deep);
-  }
-
-  .core-stage::before{
-    content:'';
-    position:absolute;
-    top:-40%; left:50%;
-    width:600px; height:600px;
-    transform:translateX(-50%);
-    background:radial-gradient(circle, rgba(255,157,61,0.16), transparent 65%);
-    pointer-events:none;
-  }
-
-  .core-readout{
-    text-align:center;
-    margin-bottom:6px;
-    position:relative;
-    z-index:2;
-  }
-
-  .core-value{
-    font-size:clamp(2.6rem, 7vw, 3.6rem);
-    font-weight:900;
-    letter-spacing:-0.02em;
-    font-variant-numeric: tabular-nums;
-    background:linear-gradient(180deg, #fff6ea, var(--amber-2));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-    text-shadow:0 0 40px rgba(255,157,61,0.25);
-  }
-
-  .core-label{
-    font-size:0.78rem;
-    text-transform:uppercase;
-    letter-spacing:0.14em;
-    color:var(--text-faint);
-    margin-top:2px;
-  }
-
-  .core-orbit{
-    position:relative;
-    width:min(280px, 62vw);
-    height:min(280px, 62vw);
-    margin:28px 0 20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  .ring{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    border:1.5px solid rgba(255,157,61,0.35);
-    animation:ringPulse 2.4s ease-out infinite;
-  }
-  .ring.r2{ animation-delay:0.8s; }
-  .ring.r3{ animation-delay:1.6s; }
-
-  @keyframes ringPulse{
-    0%{ transform:scale(0.78); opacity:0.55; }
-    75%{ opacity:0; }
-    100%{ transform:scale(1.22); opacity:0; }
-  }
-
-  .core-button{
-    position:relative;
-    width:78%;
-    height:78%;
-    border-radius:50%;
-    border:none;
-    cursor:pointer;
-    background:
-      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), transparent 55%),
-      linear-gradient(155deg, #2b2016, #171310 60%),
-      conic-gradient(from 0deg, var(--amber), #7a3a05, var(--amber));
-    background-blend-mode: normal, normal, screen;
-    box-shadow:
-      0 0 0 1px rgba(255,157,61,0.5),
-      0 20px 45px -12px rgba(255,157,61,0.35),
-      inset 0 0 40px rgba(0,0,0,0.55);
-    display:flex; align-items:center; justify-content:center;
-    color:#2a1706;
-    font-size:clamp(2.6rem, 8vw, 3.6rem);
-    transition:transform 0.12s cubic-bezier(.34,1.56,.64,1);
-    -webkit-tap-highlight-color: transparent;
-    user-select:none;
-    touch-action: manipulation;
-    z-index:2;
-  }
-
-  .core-button i{
-    filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));
-    animation:spin 26s linear infinite;
-    color:#fff2e0;
-  }
-
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-
-  .core-button:active{ transform:scale(0.93); }
-
-  .core-button.punch{ animation:corePunch 0.32s ease; }
-  @keyframes corePunch{
-    0%{ transform:scale(1); }
-    35%{ transform:scale(0.9) rotate(-1.5deg); }
-    65%{ transform:scale(1.06) rotate(1deg); }
-    100%{ transform:scale(1) rotate(0); }
-  }
-
-  .core-substats{
-    display:flex;
-    gap:22px;
-    color:var(--text-lo);
-    font-size:0.88rem;
-    margin-top:4px;
-    position:relative;
-    z-index:2;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-
-  .core-substats b{
-    color:var(--text-hi);
-    font-weight:700;
-  }
-  .core-substats .dot-teal b{ color:var(--teal); }
-  .core-substats .dot-amber b{ color:var(--amber-2); }
-
-  .float-layer{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:5;
-  }
-
-  .float-number{
-    position:absolute;
-    transform:translate(-50%,-50%);
-    font-family:'Unbounded';
-    font-weight:700;
-    font-size:1.15rem;
-    color:var(--amber-2);
-    text-shadow:0 2px 10px rgba(0,0,0,0.5);
-    animation:floatUp 0.9s ease-out forwards;
-    white-space:nowrap;
-  }
-  .float-number.crit{ color:var(--teal); font-size:1.4rem; }
-
-  @keyframes floatUp{
-    0%{ opacity:1; transform:translate(-50%,-50%) scale(0.85); }
-    100%{ opacity:0; transform:translate(-50%,-220%) scale(1.15); }
-  }
-
-  .core-hint{
-    margin-top:22px;
-    font-size:0.78rem;
-    color:var(--text-faint);
-    text-align:center;
-    position:relative;
-    z-index:2;
-  }
-
-  /* ===== UPGRADES PANEL ===== */
-  .upgrades-panel{
-    background:linear-gradient(180deg, var(--panel), rgba(255,255,255,0.01));
-    border:1px solid var(--border);
-    border-radius:26px;
-    padding:26px 20px 20px;
-    box-shadow: var(--shadow-deep);
-    display:flex;
-    flex-direction:column;
-    max-height:640px;
-  }
-
-  .panel-heading{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin-bottom:16px;
-    padding:0 6px;
-  }
-
-  .panel-heading h2{
-    font-size:1.05rem;
-    font-weight:700;
-  }
-
-  .panel-heading span{
-    font-size:0.72rem;
-    color:var(--text-faint);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-  }
-
-  .upgrade-list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    overflow-y:auto;
-    padding:2px 4px 6px;
-  }
-
-  .upgrade-list::-webkit-scrollbar{ width:6px; }
-  .upgrade-list::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.12); border-radius:10px; }
-  .upgrade-list::-webkit-scrollbar-track{ background:transparent; }
-
-  .upgrade-card{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:12px 14px;
-    border-radius:16px;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,0.02);
-    cursor:pointer;
-    transition:all 0.18s ease;
-    text-align:left;
-    width:100%;
-    color:var(--text-hi);
-    font-family:inherit;
-  }
-
-  .upgrade-card:not(:disabled):hover{
-    border-color:rgba(255,157,61,0.4);
-    background:var(--amber-soft);
-    transform:translateY(-2px);
-  }
-
-  .upgrade-card.auto:not(:disabled):hover{
-    border-color:rgba(57,214,184,0.4);
-    background:var(--teal-soft);
-  }
-
-  .upgrade-card:disabled{
-    opacity:0.42;
-    cursor:not-allowed;
-  }
-
-  .upgrade-icon{
-    flex-shrink:0;
-    width:42px; height:42px;
-    border-radius:12px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:16px;
-    background:var(--amber-soft);
-    color:var(--amber-2);
-  }
-
-  .upgrade-card.auto .upgrade-icon{
-    background:var(--teal-soft);
-    color:var(--teal);
-  }
-
-  .upgrade-info{ flex:1; min-width:0; }
-
-  .upgrade-name{
-    font-weight:700;
-    font-size:0.9rem;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
-  .upgrade-owned{
-    font-size:0.68rem;
-    padding:1px 7px;
-    border-radius:20px;
-    background:rgba(255,255,255,0.08);
-    color:var(--text-lo);
-    font-weight:600;
-  }
-
-  .upgrade-desc{
-    font-size:0.76rem;
-    color:var(--text-lo);
-    margin-top:2px;
-  }
-
-  .upgrade-cost{
-    flex-shrink:0;
-    text-align:right;
-    font-family:'Unbounded';
-    font-weight:700;
-    font-size:0.88rem;
-    color:var(--amber-2);
-  }
-
-  .upgrade-card.auto .upgrade-cost{ color:var(--teal); }
-
-  .upgrade-cost small{
-    display:block;
-    font-family:'IBM Plex Sans';
-    font-weight:500;
-    font-size:0.62rem;
-    color:var(--text-faint);
-    text-transform:uppercase;
-    letter-spacing:0.06em;
-  }
-
-  .empty-affordable{
-    text-align:center;
-    padding:20px 10px;
-    color:var(--text-faint);
-    font-size:0.82rem;
-  }
-
-  /* ===== ACHIEVEMENTS ===== */
-  .achievements{
-    position:relative;
-    z-index:10;
-    max-width:1180px;
-    margin:0 auto;
-    padding:0 24px 60px;
-  }
-
-  .achievements h3{
-    font-size:0.8rem;
-    text-transform:uppercase;
-    letter-spacing:0.1em;
-    color:var(--text-faint);
-    margin-bottom:12px;
-  }
-
-  .achv-row{
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-
-  .achv-badge{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 14px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:var(--panel);
-    font-size:0.78rem;
-    color:var(--text-faint);
-    transition:all 0.3s ease;
-  }
-
-  .achv-badge i{ font-size:14px; }
-
-  .achv-badge.unlocked{
-    color:var(--text-hi);
-    border-color:rgba(255,157,61,0.4);
-    background:var(--amber-soft);
-  }
-  .achv-badge.unlocked i{ color:var(--amber-2); }
-
-  /* ===== TOASTS ===== */
-  .toast-layer{
-    position:fixed;
-    top:20px;
-    right:20px;
-    z-index:2000;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    max-width:320px;
-  }
-
-  .toast{
-    background:var(--bg-2);
-    border:1px solid rgba(255,157,61,0.4);
-    border-radius:14px;
-    padding:12px 16px;
-    display:flex;
-    gap:10px;
-    align-items:flex-start;
-    box-shadow:0 15px 40px -10px rgba(0,0,0,0.6);
-    animation:toastIn 0.35s cubic-bezier(.2,.9,.3,1.2);
-  }
-
-  .toast i{ color:var(--amber-2); margin-top:2px; }
-  .toast .t-title{ font-weight:700; font-size:0.82rem; }
-  .toast .t-sub{ font-size:0.72rem; color:var(--text-lo); margin-top:2px; }
-
-  @keyframes toastIn{
-    from{ opacity:0; transform:translateX(30px); }
-    to{ opacity:1; transform:translateX(0); }
-  }
-  .toast.out{ animation:toastOut 0.3s ease forwards; }
-  @keyframes toastOut{ to{ opacity:0; transform:translateX(30px) scale(0.95); } }
-
-  /* ===== RESET MODAL ===== */
-  .modal-backdrop{
-    position:fixed; inset:0;
-    background:rgba(6,7,9,0.72);
-    backdrop-filter:blur(6px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:3000;
-    padding:20px;
-  }
-  .modal-backdrop.open{ display:flex; }
-
-  .modal-card{
-    background:var(--bg-2);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:28px;
-    max-width:380px;
-    text-align:center;
-    box-shadow:0 30px 70px -15px rgba(0,0,0,0.7);
-  }
-
-  .modal-card i{
-    font-size:26px;
-    color:var(--danger);
-    margin-bottom:12px;
-  }
-
-  .modal-card h3{ font-size:1.05rem; margin-bottom:8px; }
-  .modal-card p{ font-size:0.85rem; color:var(--text-lo); margin-bottom:22px; line-height:1.5; }
-
-  .modal-actions{ display:flex; gap:10px; justify-content:center; }
-
-  .btn{
-    padding:10px 20px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:var(--panel);
-    color:var(--text-hi);
-    font-weight:600;
-    font-size:0.85rem;
-    cursor:pointer;
-    transition:all 0.2s ease;
-    font-family:inherit;
-  }
-  .btn:hover{ background:var(--panel-strong); }
-  .btn.danger{
-    background:linear-gradient(135deg, var(--danger), #c23f3f);
-    border:none;
-    color:#fff;
-  }
-  .btn.danger:hover{ filter:brightness(1.1); }
-
-  footer{
-    position:relative;
-    z-index:10;
-    text-align:center;
-    padding:10px 20px 40px;
-    color:var(--text-faint);
-    font-size:0.76rem;
-  }
-
-
-  /* ===== COUNTER ROLL ANIMATION ===== */
-  .counter-roll{
-    position:relative;
-    display:inline-block;
-    overflow:hidden;
-    height:1.15em;
-    line-height:1.15em;
-    vertical-align:bottom;
-  }
-  .counter-roll .roll-old,
-  .counter-roll .roll-new{
-    display:block;
-    transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), opacity 0.22s ease;
-  }
-  .counter-roll .roll-new{
-    position:absolute;
-    top:0; left:0; right:0;
-    transform:translateY(110%);
-    opacity:0;
-  }
-  .counter-roll.anim .roll-old{
-    transform:translateY(-110%);
-    opacity:0;
-  }
-  .counter-roll.anim .roll-new{
-    transform:translateY(0);
-    opacity:1;
-  }
-
-  @media (max-width: 860px){
-    .game{ grid-template-columns:1fr; }
-    .upgrades-panel{ max-height:none; }
-    .upgrade-list{ max-height:420px; }
-  }
-
-  @media (max-width: 480px){
-    .topbar{ padding:20px 16px 6px; }
-    .game{ padding:16px 16px 30px; gap:22px; }
-    .core-stage{ padding:30px 14px 26px; }
-    .core-substats{ gap:14px; font-size:0.8rem; }
-  }
-</style>
-<base target="_blank">
-<base target="_blank">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AternosUnlimited — 24/7 Сервер без остановок</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: {
+                            violet: '#8b5cf6',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            pink: '#ec4899',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050507;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Animated background grid */
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1); }
+            to { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.2); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(6, 182, 212, 0.3); }
+            50% { text-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 60px rgba(6, 182, 212, 0.5); }
+        }
+
+        .text-glow {
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        /* Glass morphism */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(139, 92, 246, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Neon button */
+        .neon-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .neon-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .neon-btn:hover::before {
+            left: 100%;
+        }
+
+        .neon-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Social buttons */
+        .btn-telegram {
+            background: linear-gradient(135deg, #0088cc 0%, #00a8e8 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-telegram:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.5), 0 0 20px rgba(0, 136, 204, 0.3);
+        }
+
+        .btn-vk {
+            background: linear-gradient(135deg, #4a76a8 0%, #5181b8 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-vk:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(74, 118, 168, 0.5), 0 0 20px rgba(74, 118, 168, 0.3);
+        }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Particle effect container */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 50%;
+            animation: particleFloat 15s infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050507;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8b5cf6, #06b6d4);
+            border-radius: 4px;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Feature icon glow */
+        .feature-icon {
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover .feature-icon {
+            filter: drop-shadow(0 0 10px currentColor);
+            transform: scale(1.1);
+        }
+    </style>
 </head>
-<body>
-  <div class="grain"></div>
+<body class="antialiased relative">
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-icon"><i class="fa-solid fa-atom"></i></div>
-      <div class="brand-name">ЭНЕРГО<span>ЯДРО</span></div>
-    </div>
-    <div class="topbar-right">
-      <div class="lifetime-chip">
-        <span class="lbl">Добыто всего</span>
-        <span class="val" id="lifetimeValue">0</span>
-      </div>
-      <button class="icon-btn" id="resetBtn" title="Сбросить прогресс" aria-label="Сбросить прогресс">
-        <i class="fa-solid fa-arrow-rotate-left"></i>
-      </button>
-    </div>
-  </header>
+    <!-- Animated Particles Background -->
+    <div class="particles" id="particles"></div>
 
-  <main class="game">
-    <section class="core-stage" id="coreStage">
-      <div class="core-readout">
-        <div class="core-value num-display counter-roll" id="energyValue">0</div>
-        <div class="core-label">единиц энергии</div>
-      </div>
+    <!-- Background Grid -->
+    <div class="fixed inset-0 bg-grid -z-10"></div>
 
-      <div class="core-orbit">
-        <span class="ring"></span>
-        <span class="ring r2"></span>
-        <span class="ring r3"></span>
-        <button class="core-button" id="coreButton" aria-label="Разогнать реактор">
-          <i class="fa-solid fa-atom"></i>
-        </button>
-        <div class="float-layer" id="floatLayer"></div>
-      </div>
+    <!-- Gradient Orbs -->
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl -z-10 animate-pulse-slow"></div>
+    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl -z-10 animate-pulse-slow" style="animation-delay: 2s;"></div>
+    <div class="fixed top-1/2 left-1/2 w-64 h-64 bg-emerald-600/5 rounded-full blur-3xl -z-10 animate-pulse-slow" style="animation-delay: 4s;"></div>
 
-      <div class="core-substats">
-        <span class="dot-amber">за клик: <b id="clickPowerValue">1</b></span>
-        <span class="dot-teal">в секунду: <b id="epsValue">0</b></span>
-        <span>кликов: <b id="clicksValue">0</b></span>
-      </div>
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-violet-500/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all duration-300">
+                        <i class="fas fa-bolt text-white text-lg"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl sm:text-2xl tracking-wide">
+                        <span class="text-white">Aternos</span><span class="gradient-text">Unlimited</span>
+                    </span>
+                </a>
 
-      <p class="core-hint">Жми по ядру, чтобы добывать энергию, и вкладывай её в модернизацию реактора</p>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wide uppercase">Преимущества</a>
+                    <a href="#apply" class="text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wide uppercase">Подать заявку</a>
+                    <a href="#contacts" class="neon-btn px-6 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-600 text-white font-semibold text-sm shadow-lg shadow-violet-500/25">
+                        Начать
+                    </a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden text-gray-400 hover:text-white transition-colors p-2">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-full bg-slate-950/95 backdrop-blur-xl border-l border-violet-500/20 z-50 md:hidden">
+            <div class="p-6">
+                <button id="closeMobileMenu" class="absolute top-6 right-6 text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="mt-16 flex flex-col gap-6">
+                    <a href="#features" class="text-gray-300 hover:text-violet-400 transition-colors text-lg font-medium">Преимущества</a>
+                    <a href="#apply" class="text-gray-300 hover:text-violet-400 transition-colors text-lg font-medium">Подать заявку</a>
+                    <a href="#contacts" class="text-gray-300 hover:text-violet-400 transition-colors text-lg font-medium">Контакты</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <!-- Badge -->
+            <div class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-violet-500/20 mb-8 animate-float">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-sm font-medium text-gray-300">Работает 24/7 без перерывов</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="reveal font-display font-black text-5xl sm:text-7xl lg:text-8xl mb-6 tracking-tight leading-tight" style="transition-delay: 0.1s;">
+                <span class="text-white">Aternos</span><span class="gradient-text text-glow">Unlimited</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="reveal text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed font-light" style="transition-delay: 0.2s;">
+                Утилита, которая поможет вашему серверу Aternos <span class="text-violet-400 font-medium">никогда не выключаться</span> и работать спокойно <span class="text-cyan-400 font-medium">24/7</span>
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6" style="transition-delay: 0.3s;">
+                <a href="#apply" class="neon-btn w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-600 text-white font-bold text-lg shadow-xl shadow-violet-500/30 flex items-center justify-center gap-3">
+                    <span>Присоединиться к проекту</span>
+                    <i class="fas fa-arrow-down animate-bounce"></i>
+                </a>
+                <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-full glass border border-violet-500/30 text-gray-300 hover:text-white hover:border-violet-500/50 font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fas fa-play text-sm"></i>
+                    <span>Узнать больше</span>
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="reveal mt-16 sm:mt-24 grid grid-cols-2 sm:grid-cols-3 gap-8 max-w-2xl mx-auto" style="transition-delay: 0.4s;">
+                <div class="text-center">
+                    <div class="font-display text-3xl sm:text-4xl font-bold gradient-text">24/7</div>
+                    <div class="text-gray-500 text-sm mt-1">Аптайм</div>
+                </div>
+                <div class="text-center">
+                    <div class="font-display text-3xl sm:text-4xl font-bold gradient-text">100%</div>
+                    <div class="text-gray-500 text-sm mt-1">Стабильность</div>
+                </div>
+                <div class="text-center col-span-2 sm:col-span-1">
+                    <div class="font-display text-3xl sm:text-4xl font-bold gradient-text">0₽</div>
+                    <div class="text-gray-500 text-sm mt-1">Стоимость</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-gray-600">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </div>
     </section>
 
-    <aside class="upgrades-panel">
-      <div class="panel-heading">
-        <h2>Модернизация</h2>
-        <span>покупай апгрейды</span>
-      </div>
-      <div class="upgrade-list" id="upgradeList"></div>
-    </aside>
-  </main>
+    <!-- Features Section -->
+    <section id="features" class="relative py-24 sm:py-32 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-16 sm:mb-20 reveal">
+                <h2 class="font-display font-bold text-3xl sm:text-5xl mb-4">
+                    <span class="text-white">Почему выбирают </span>
+                    <span class="gradient-text">нас</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Максимальная эффективность и надёжность для вашего игрового сервера
+                </p>
+            </div>
 
-  <section class="achievements">
-    <h3>Достижения</h3>
-    <div class="achv-row" id="achvRow"></div>
-  </section>
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <!-- Feature 1: Stability -->
+                <div class="glass-card rounded-2xl p-8 reveal" style="transition-delay: 0.1s;">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-6 text-violet-400">
+                        <i class="fas fa-shield-halved text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Стабильность</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Продвинутая система мониторинга гарантирует бесперебойную работу сервера без внезапных отключений и лагов.
+                    </p>
+                </div>
 
-  <footer>Энергоядро © 2026 — прогресс сохраняется локально, в этом браузере</footer>
+                <!-- Feature 2: 24/7 -->
+                <div class="glass-card rounded-2xl p-8 reveal" style="transition-delay: 0.2s;">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 text-cyan-400">
+                        <i class="fas fa-clock text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Работа 24/7</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Ваш сервер работает круглосуточно. Игроки могут заходить в любое время дня и ночи без ограничений.
+                    </p>
+                </div>
 
-  <div class="toast-layer" id="toastLayer"></div>
+                <!-- Feature 3: Easy Setup -->
+                <div class="glass-card rounded-2xl p-8 reveal" style="transition-delay: 0.3s;">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400">
+                        <i class="fas fa-sliders text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Лёгкая настройка</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Интуитивно понятный интерфейс и подробная инструкция позволяют запустить утилиту за считанные минуты.
+                    </p>
+                </div>
 
-  <div class="modal-backdrop" id="resetModal">
-    <div class="modal-card">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <h3>Сбросить реактор?</h3>
-      <p>Вся накопленная энергия, апгрейды и достижения будут удалены без возможности восстановления.</p>
-      <div class="modal-actions">
-        <button class="btn" id="cancelReset">Отмена</button>
-        <button class="btn danger" id="confirmReset">Сбросить</button>
-      </div>
-    </div>
-  </div>
+                <!-- Feature 4: Free -->
+                <div class="glass-card rounded-2xl p-8 reveal" style="transition-delay: 0.4s;">
+                    <div class="feature-icon w-14 h-14 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center mb-6 text-pink-400">
+                        <i class="fas fa-gift text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-white mb-3">Полностью бесплатно</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Все функции доступны без каких-либо платежей и подписок. Никаких скрытых комиссий и ограничений.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script>
-(function(){
-  "use strict";
+    <!-- Apply Section -->
+    <section id="apply" class="relative py-24 sm:py-32 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="glass rounded-3xl p-8 sm:p-12 lg:p-16 border border-violet-500/20 relative overflow-hidden reveal">
+                <!-- Background decoration -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl -z-10"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl -z-10"></div>
 
-  var SAVE_KEY = 'energosphere-save-v1';
+                <div class="text-center mb-12">
+                    <h2 class="font-display font-bold text-3xl sm:text-5xl mb-4">
+                        <span class="text-white">Подать </span>
+                        <span class="gradient-text">заявку</span>
+                    </h2>
+                    <p class="text-gray-400 text-lg max-w-xl mx-auto">
+                        Выберите удобный способ связи и подайте заявку на подключение вашего сервера. Отпишите в группе на заявку и подключите бота вы сможете управлять им запускать и выключать.
+                    </p>
+                </div>
 
-  var UPGRADES = [
-    { id:'stabilizer',  name:'Стабилизатор поля',        desc:'+1 к силе клика',          icon:'fa-hand-pointer',   type:'click', value:1,     baseCost:15,       costMult:1.15 },
-    { id:'turbine',     name:'Микротурбина',             desc:'+1 энергии/сек',           icon:'fa-fan',            type:'auto',  value:1,     baseCost:60,       costMult:1.16 },
-    { id:'catalyst',    name:'Катализатор реакции',      desc:'+8 к силе клика',          icon:'fa-flask',          type:'click', value:8,     baseCost:400,      costMult:1.15 },
-    { id:'condenser',   name:'Плазменный конденсатор',   desc:'+8 энергии/сек',           icon:'fa-battery-full',   type:'auto',  value:8,     baseCost:900,      costMult:1.16 },
-    { id:'injector',    name:'Инжектор изотопов',        desc:'+45 к силе клика',         icon:'fa-syringe',        type:'click', value:45,    baseCost:6500,     costMult:1.15 },
-    { id:'thermo',      name:'Термоядерный модуль',      desc:'+45 энергии/сек',          icon:'fa-fire-burner',    type:'auto',  value:45,    baseCost:14000,    costMult:1.16 },
-    { id:'amplifier',   name:'Квантовый усилитель',      desc:'+220 к силе клика',        icon:'fa-bolt',           type:'click', value:220,   baseCost:90000,    costMult:1.15 },
-    { id:'antimatter',  name:'Антиматериальный реактор', desc:'+220 энергии/сек',         icon:'fa-radiation',      type:'auto',  value:220,   baseCost:180000,   costMult:1.16 },
-    { id:'laser',       name:'Гамма-лазер',              desc:'+1.2K к силе клика',       icon:'fa-bullseye',       type:'click', value:1200,  baseCost:950000,   costMult:1.15 },
-    { id:'singularity', name:'Чёрная дыра-генератор',    desc:'+1.2K энергии/сек',        icon:'fa-circle-dot',     type:'auto',  value:1200,  baseCost:1900000,  costMult:1.16 },
-    { id:'overclock',   name:'Разгон ядра',              desc:'+7K к силе клика',         icon:'fa-gauge-high',     type:'click', value:7000,  baseCost:9500000,  costMult:1.15 },
-    { id:'dyson',       name:'Сфера Дайсона',            desc:'+7K энергии/сек',          icon:'fa-sun',            type:'auto',  value:7000,  baseCost:19000000, costMult:1.16 },
-    { id:'wormhole',    name:'Червоточина',              desc:'+45K к силе клика',        icon:'fa-ghost',          type:'click', value:45000, baseCost:95000000, costMult:1.15 },
-    { id:'multiverse',  name:'Мультиверсальный коллайдер',desc:'+45K энергии/сек',        icon:'fa-infinity',       type:'auto',  value:45000, baseCost:190000000,costMult:1.16 },
-    { id:'bigbang',     name:'Большой взрыв',            desc:'+300K к силе клика',       icon:'fa-meteor',         type:'click', value:300000,baseCost:950000000,costMult:1.15 },
-    { id:'omniverse',   name:'Омниверс',                 desc:'+300K энергии/сек',        icon:'fa-globe',          type:'auto',  value:300000,baseCost:1900000000,costMult:1.16 },
-    { id:'neutron',     name:'Нейтронный синтезатор',    desc:'+2M к силе клика',         icon:'fa-atom',           type:'click', value:2000000,baseCost:9500000000,costMult:1.15 },
-    { id:'pulsar',      name:'Пульсарная станция',       desc:'+2M энергии/сек',          icon:'fa-satellite-dish', type:'auto',  value:2000000,baseCost:19000000000,costMult:1.16 },
-    { id:'hyperion',    name:'Гиперион-ядро',            desc:'+15M к силе клика',        icon:'fa-hurricane',      type:'click', value:15000000,baseCost:95000000000,costMult:1.15 },
-    { id:'void',        name:'Пустотный насос',          desc:'+15M энергии/сек',         icon:'fa-circle-notch',   type:'auto',  value:15000000,baseCost:190000000000,costMult:1.16 },
-    { id:'primordial',  name:'Первозданный кристалл',    desc:'+120M к силе клика',       icon:'fa-gem',            type:'click', value:120000000,baseCost:950000000000,costMult:1.15 },
-    { id:'eternity',    name:'Вечный двигатель',         desc:'+120M энергии/сек',        icon:'fa-clock',          type:'auto',  value:120000000,baseCost:1900000000000,costMult:1.16 }
-  ];
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <!-- Telegram Button -->
+                    <a href="https://clck.ru/3VVKuj" target="_blank" rel="noopener noreferrer" 
+                       class="btn-telegram group relative flex items-center justify-center gap-4 px-8 py-6 rounded-2xl text-white font-bold text-lg overflow-hidden">
+                        <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <i class="fab fa-telegram text-3xl group-hover:scale-110 transition-transform duration-300"></i>
+                        <div class="text-left">
+                            <div class="text-sm opacity-80 font-medium">Подать заявку в</div>
+                            <div class="text-xl font-display">Telegram Заявка</div>
+                        </div>
+                    </a>
 
-  var ACHIEVEMENTS = [
-    { id:'a1',  threshold:50,           name:'Первая искра' },
-    { id:'a2',  threshold:1000,         name:'Разогрев реактора' },
-    { id:'a3',  threshold:25000,        name:'Стабильный поток' },
-    { id:'a4',  threshold:250000,       name:'Критическая масса' },
-    { id:'a5',  threshold:2500000,      name:'Термоядерный синтез' },
-    { id:'a6',  threshold:25000000,     name:'Событие сверхновой' },
-    { id:'a7',  threshold:150000000,    name:'Гравитационный коллапс' },
-    { id:'a8',  threshold:800000000,    name:'Квазарное излучение' },
-    { id:'a9',  threshold:5000000000,   name:'Поглощение галактики' },
-    { id:'a10', threshold:30000000000,  name:'Большой взрыв 2.0' },
-    { id:'a11', threshold:200000000000, name:'Теория всего' },
-    { id:'a12', threshold:1000000000000,name:'Бог энергии' },
-    { id:'a13', threshold:5000000000000,name:'Повелитель материи' },
-    { id:'a14', threshold:25000000000000,name:'Энтропийный инвертор' },
-    { id:'a15', threshold:100000000000000,name:'Коллапс пространства' },
-    { id:'a16', threshold:500000000000000,name:'Верховный архитектор' },
-    { id:'a17', threshold:2500000000000000,name:'Пробуждение сознания' },
-    { id:'a18', threshold:10000000000000000,name:'Титан энергии' },
-    { id:'a19', threshold:50000000000000000,name:'Матрица вселенной' },
-    { id:'a20', threshold:250000000000000000,name:'Хронос' },
-    { id:'a21', threshold:1000000000000000000,name:'Абсолют' },
-    { id:'a22', threshold:5000000000000000000,name:'Начало и конец' },
-    { id:'a23', threshold:25000000000000000000,name:'Вне времени' },
-    { id:'a24', threshold:100000000000000000000,name:'Первопричина' },
-    { id:'a25', threshold:500000000000000000000,name:'Бесконечность' }
-  ];
+                    <!-- VK Button -->
+                    <a href="https://clck.ru/3VVKxX" target="_blank" rel="noopener noreferrer" 
+                       class="btn-vk group relative flex items-center justify-center gap-4 px-8 py-6 rounded-2xl text-white font-bold text-lg overflow-hidden">
+                        <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <i class="fab fa-vk text-3xl group-hover:scale-110 transition-transform duration-300"></i>
+                        <div class="text-left">
+                            <div class="text-sm opacity-80 font-medium">Подать заявку в</div>
+                            <div class="text-xl font-display">VK Заявка</div>
+                        </div>
+                    </a>
+                </div>
 
-  var state = {
-    energy: 0,
-    totalEarned: 0,
-    totalClicks: 0,
-    owned: {},
-    unlocked: [],
-    lastSeen: null
-  };
+                <div class="mt-10 text-center">
+                    <p class="text-gray-500 text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-lock text-xs"></i>
+                        <span>Все заявки обрабатываются вручную в течение 5-10 минут</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function loadState(){
-    try{
-      var raw = localStorage.getItem(SAVE_KEY);
-      if(!raw) return;
-      var data = JSON.parse(raw);
-      state.energy = data.energy || 0;
-      state.totalEarned = data.totalEarned || 0;
-      state.totalClicks = data.totalClicks || 0;
-      state.owned = data.owned || {};
-      state.unlocked = data.unlocked || [];
-      state.lastSeen = data.lastSeen || null;
-    }catch(e){ /* повреждённое сохранение — начинаем заново */ }
-  }
+    <!-- Footer -->
+    <footer id="contacts" class="relative border-t border-violet-500/10 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <span class="font-display font-bold text-lg">
+                        <span class="text-white">Aternos</span><span class="gradient-text">Unlimited</span>
+                    </span>
+                </div>
 
-  function saveState(){
-    state.lastSeen = Date.now();
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-  }
+                <!-- Copyright -->
+                <div class="text-gray-500 text-sm text-center">
+                    © 2026 AternosUnlimited. Все права защищены.
+                </div>
 
-  function ownedCount(id){ return state.owned[id] || 0; }
+                <!-- Social Links -->
+                <div class="flex items-center gap-4">
+                    <a href="https://clck.ru/3VVKuj" target="_blank" rel="noopener noreferrer" 
+                       class="w-10 h-10 rounded-full glass border border-violet-500/20 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all duration-300">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://clck.ru/3VVKxX" target="_blank" rel="noopener noreferrer" 
+                       class="w-10 h-10 rounded-full glass border border-violet-500/20 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-all duration-300">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-  function upgradeCost(up){
-    return Math.ceil(up.baseCost * Math.pow(up.costMult, ownedCount(up.id)));
-  }
+    <script>
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-  function computeStats(){
-    var clickPower = 1;
-    var eps = 0;
-    for(var i=0;i<UPGRADES.length;i++){
-      var up = UPGRADES[i];
-      var n = ownedCount(up.id);
-      if(!n) continue;
-      if(up.type === 'click') clickPower += up.value * n;
-      else eps += up.value * n;
-    }
-    return { clickPower: clickPower, eps: eps };
-  }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
 
-  function formatNumber(n){
-    n = Math.floor(n);
-    if(n < 1000) return String(n);
-    var units = ['К','М','млрд','трлн','квдрлн'];
-    var idx = -1;
-    var val = n;
-    while(val >= 1000 && idx < units.length - 1){
-      val /= 1000;
-      idx++;
-    }
-    var digits = val < 10 ? 2 : (val < 100 ? 1 : 0);
-    var rounded = parseFloat(val.toFixed(digits));
-    if(rounded >= 1000 && idx < units.length - 1){
-      val = rounded / 1000;
-      idx++;
-      digits = val < 10 ? 2 : (val < 100 ? 1 : 0);
-      rounded = parseFloat(val.toFixed(digits));
-    }
-    return rounded.toFixed(digits) + ' ' + units[idx];
-  }
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // ===== DOM refs =====
-  var energyValueEl = document.getElementById('energyValue');
-  var lifetimeValueEl = document.getElementById('lifetimeValue');
-  var clickPowerValueEl = document.getElementById('clickPowerValue');
-  var epsValueEl = document.getElementById('epsValue');
-  var clicksValueEl = document.getElementById('clicksValue');
-  var upgradeListEl = document.getElementById('upgradeList');
-  var achvRowEl = document.getElementById('achvRow');
-  var coreButton = document.getElementById('coreButton');
-  var coreStage = document.getElementById('coreStage');
-  var floatLayer = document.getElementById('floatLayer');
-  var toastLayer = document.getElementById('toastLayer');
-  var resetBtn = document.getElementById('resetBtn');
-  var resetModal = document.getElementById('resetModal');
-  var cancelResetBtn = document.getElementById('cancelReset');
-  var confirmResetBtn = document.getElementById('confirmReset');
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-  var stats = { clickPower:1, eps:0 };
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
 
-  function refreshStats(){
-    stats = computeStats();
-  }
+        closeMobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
 
-  var lastEnergyText = '0';
-  var energyAnimTimer = null;
+        // Close mobile menu when clicking on links
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
 
-  function setEnergyAnimated(newText){
-    if(newText === lastEnergyText) return;
-    lastEnergyText = newText;
-    if(energyAnimTimer) clearTimeout(energyAnimTimer);
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
 
-    var oldText = lastEnergyText || '0';
-    energyValueEl.innerHTML = '<span class="roll-old">' + oldText + '</span><span class="roll-new">' + newText + '</span>';
-    energyValueEl.classList.add('counter-roll');
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            particlesContainer.appendChild(particle);
+        }
 
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        energyValueEl.classList.add('anim');
-      });
-    });
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
 
-    energyAnimTimer = setTimeout(function(){
-      energyValueEl.textContent = newText;
-      energyValueEl.classList.remove('counter-roll','anim');
-      energyAnimTimer = null;
-    }, 300);
-  }
-
-  function renderReadouts(){
-    setEnergyAnimated(formatNumber(state.energy));
-    lifetimeValueEl.textContent = formatNumber(state.totalEarned);
-    clickPowerValueEl.textContent = formatNumber(stats.clickPower);
-    epsValueEl.textContent = formatNumber(stats.eps);
-    clicksValueEl.textContent = formatNumber(state.totalClicks);
-  }
-
-  function renderUpgrades(){
-    upgradeListEl.innerHTML = '';
-    for(var i=0;i<UPGRADES.length;i++){
-      var up = UPGRADES[i];
-      var cost = upgradeCost(up);
-      var n = ownedCount(up.id);
-      var affordable = state.energy >= cost;
-
-      var card = document.createElement('button');
-      card.className = 'upgrade-card' + (up.type === 'auto' ? ' auto' : '');
-      card.disabled = !affordable;
-      card.setAttribute('data-id', up.id);
-
-      card.innerHTML =
-        '<div class="upgrade-icon"><i class="fa-solid ' + up.icon + '"></i></div>' +
-        '<div class="upgrade-info">' +
-          '<div class="upgrade-name">' + up.name + (n > 0 ? '<span class="upgrade-owned">x' + n + '</span>' : '') + '</div>' +
-          '<div class="upgrade-desc">' + up.desc + '</div>' +
-        '</div>' +
-        '<div class="upgrade-cost">' + formatNumber(cost) + '<small>энергии</small></div>';
-
-      card.addEventListener('click', function(id){
-        return function(){ buyUpgrade(id); };
-      }(up.id));
-
-      upgradeListEl.appendChild(card);
-    }
-  }
-
-  function renderAchievements(){
-    achvRowEl.innerHTML = '';
-    for(var i=0;i<ACHIEVEMENTS.length;i++){
-      var a = ACHIEVEMENTS[i];
-      var unlocked = state.unlocked.indexOf(a.id) !== -1;
-      var badge = document.createElement('div');
-      badge.className = 'achv-badge' + (unlocked ? ' unlocked' : '');
-      badge.innerHTML = '<i class="fa-solid ' + (unlocked ? 'fa-star' : 'fa-lock') + '"></i><span>' + a.name + '</span>';
-      achvRowEl.appendChild(badge);
-    }
-  }
-
-  function renderAll(){
-    refreshStats();
-    renderReadouts();
-    renderUpgrades();
-    renderAchievements();
-  }
-
-  function updateAffordability(){
-    var cards = upgradeListEl.children;
-    for(var i=0;i<cards.length && i<UPGRADES.length;i++){
-      cards[i].disabled = state.energy < upgradeCost(UPGRADES[i]);
-    }
-  }
-
-  function buyUpgrade(id){
-    var up = null;
-    for(var i=0;i<UPGRADES.length;i++){ if(UPGRADES[i].id === id){ up = UPGRADES[i]; break; } }
-    if(!up) return;
-    var cost = upgradeCost(up);
-    if(state.energy < cost) return;
-    state.energy -= cost;
-    state.owned[id] = ownedCount(id) + 1;
-    refreshStats();
-    renderReadouts();
-    renderUpgrades();
-    saveState();
-  }
-
-  function showToast(title, sub, icon){
-    var toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = '<i class="fa-solid ' + (icon || 'fa-star') + '"></i>' +
-      '<div><div class="t-title">' + title + '</div><div class="t-sub">' + sub + '</div></div>';
-    toastLayer.appendChild(toast);
-    setTimeout(function(){
-      toast.classList.add('out');
-      setTimeout(function(){ toast.remove(); }, 320);
-    }, 3600);
-  }
-
-  function checkAchievements(){
-    for(var i=0;i<ACHIEVEMENTS.length;i++){
-      var a = ACHIEVEMENTS[i];
-      if(state.unlocked.indexOf(a.id) === -1 && state.totalEarned >= a.threshold){
-        state.unlocked.push(a.id);
-        showToast('Достижение получено', a.name, 'fa-star');
-        renderAchievements();
-      }
-    }
-  }
-
-  var floatColorToggle = 0;
-  function spawnFloatNumber(clientX, clientY, amount){
-    var rect = coreStage.getBoundingClientRect();
-    var x = clientX - rect.left + (Math.random()*30 - 15);
-    var y = clientY - rect.top;
-    var el = document.createElement('span');
-    floatColorToggle = (floatColorToggle + 1) % 6;
-    el.className = 'float-number' + (floatColorToggle === 0 ? ' crit' : '');
-    el.textContent = '+' + formatNumber(amount);
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
-    floatLayer.appendChild(el);
-    el.addEventListener('animationend', function(){ el.remove(); });
-  }
-
-  function handleClick(e){
-    var amount = stats.clickPower;
-    state.energy += amount;
-    state.totalEarned += amount;
-    state.totalClicks += 1;
-
-    var point = (e.touches && e.touches[0]) ? e.touches[0] : e;
-    spawnFloatNumber(point.clientX, point.clientY, amount);
-
-    coreButton.classList.remove('punch');
-    void coreButton.offsetWidth;
-    coreButton.classList.add('punch');
-
-    renderReadouts();
-    updateAffordability();
-    checkAchievements();
-
-    if(state.totalClicks % 25 === 0){
-      saveState();
-    }
-  }
-
-  coreButton.addEventListener('click', handleClick);
-
-  // ===== game loop (auto-generators) =====
-  var TICK_MS = 100;
-  setInterval(function(){
-    if(stats.eps <= 0) return;
-    var gain = stats.eps / (1000 / TICK_MS);
-    state.energy += gain;
-    state.totalEarned += gain;
-    renderReadouts();
-    updateAffordability();
-    checkAchievements();
-  }, TICK_MS);
-
-  // ===== periodic autosave =====
-  setInterval(saveState, 5000);
-  window.addEventListener('beforeunload', saveState);
-
-  // ===== reset flow =====
-  resetBtn.addEventListener('click', function(){ resetModal.classList.add('open'); });
-  cancelResetBtn.addEventListener('click', function(){ resetModal.classList.remove('open'); });
-  resetModal.addEventListener('click', function(e){ if(e.target === resetModal) resetModal.classList.remove('open'); });
-  confirmResetBtn.addEventListener('click', function(){
-    localStorage.removeItem(SAVE_KEY);
-    state = { energy:0, totalEarned:0, totalClicks:0, owned:{}, unlocked:[], lastSeen:null };
-    resetModal.classList.remove('open');
-    renderAll();
-    saveState();
-  });
-
-  // ===== offline progress =====
-  function grantOfflineProgress(){
-    if(!state.lastSeen) return;
-    var elapsedSec = Math.min((Date.now() - state.lastSeen) / 1000, 8 * 3600);
-    if(elapsedSec < 30) return;
-    refreshStats();
-    if(stats.eps <= 0) return;
-    var gained = stats.eps * elapsedSec;
-    state.energy += gained;
-    state.totalEarned += gained;
-    showToast('Реактор работал без вас', 'Накоплено ' + formatNumber(gained) + ' энергии', 'fa-industry');
-  }
-
-  // ===== init =====
-  loadState();
-  refreshStats();
-  grantOfflineProgress();
-  renderAll();
-  saveState();
-})();
-</script>
+        // Header background on scroll
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-lg', 'shadow-violet-500/5');
+            } else {
+                header.classList.remove('shadow-lg', 'shadow-violet-500/5');
+            }
+        });
+    </script>
 </body>
 </html>
