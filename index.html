@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script>
@@ -15,8 +15,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Orbitron', 'sans-serif'],
+                        sans: ['Nunito', 'sans-serif'],
                     }
                 }
             }
@@ -25,305 +24,255 @@
 
     <style>
         body {
-            background-color: #020204;
-            color: #e2e8f0;
+            font-family: 'Nunito', sans-serif;
+            background-color: #faf8f5;
+            color: #4a4a4a;
             overflow-x: hidden;
         }
 
-        /* Animated grid background */
-        .bg-grid {
-            background-image: 
-                linear-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(139, 92, 246, 0.04) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: gridMove 25s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
-        }
-
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(139, 92, 246, 0.4);
+        /* Soft blobs on background */
+        .blob {
+            position: fixed;
             border-radius: 50%;
-            animation: float 12s infinite;
+            filter: blur(80px);
+            opacity: 0.35;
+            z-index: 0;
+            animation: breathe 8s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #ffd6c2;
+            top: -100px;
+            left: -100px;
         }
 
-        /* Glass morphism */
-        .glass {
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(139, 92, 246, 0.12);
+        .blob-2 {
+            width: 350px;
+            height: 350px;
+            background: #c8f6e8;
+            bottom: -80px;
+            right: -80px;
+            animation-delay: 2s;
         }
 
-        .glass-card {
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #fff0c2;
+            top: 40%;
+            left: 60%;
+            animation-delay: 4s;
         }
 
-        .glass-card:hover {
-            background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(139, 92, 246, 0.4);
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.15), 0 0 30px rgba(139, 92, 246, 0.1);
+        @keyframes breathe {
+            0%, 100% { transform: scale(1) translate(0, 0); }
+            33% { transform: scale(1.1) translate(20px, -20px); }
+            66% { transform: scale(0.95) translate(-10px, 10px); }
         }
 
-        /* Gradient text */
-        .gradient-text {
-            background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Soft card style */
+        .soft-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .gradient-text-amber {
-            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .soft-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
-        /* Neon glow */
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        /* Specific card hover tints */
+        .card-coral:hover { box-shadow: 0 20px 48px rgba(255, 150, 120, 0.15), 0 4px 12px rgba(0,0,0,0.03); border-color: rgba(255, 150, 120, 0.2); }
+        .card-mint:hover { box-shadow: 0 20px 48px rgba(80, 200, 160, 0.15), 0 4px 12px rgba(0,0,0,0.03); border-color: rgba(80, 200, 160, 0.2); }
+        .card-gray:hover { box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0,0,0,0.03); }
+
+        /* Soft icon containers */
+        .icon-coral { background: #fff0eb; color: #e07a5f; }
+        .icon-mint { background: #e8f5f0; color: #2a9d8f; }
+        .icon-gray { background: #f0f0f0; color: #9ca3af; }
+
+        /* Soft badges */
+        .badge-soft-green {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .badge-soft-orange {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .badge-soft-gray {
+            background: #f5f5f5;
+            color: #9e9e9e;
         }
 
-        .neon-glow:hover {
-            box-shadow: 0 0 40px rgba(139, 92, 246, 0.5), 0 0 80px rgba(139, 92, 246, 0.2);
-        }
-
-        /* Project card specific styles */
-        .project-icon {
-            transition: all 0.4s ease;
-        }
-
-        .glass-card:hover .project-icon {
-            transform: scale(1.15) rotate(5deg);
-            filter: drop-shadow(0 0 15px currentColor);
-        }
-
-        /* Status badges */
-        .badge-live {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
-        .badge-game {
-            background: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #f59e0b;
-        }
-
-        .badge-soon {
-            background: rgba(107, 114, 128, 0.15);
-            border: 1px solid rgba(107, 114, 128, 0.3);
-            color: #9ca3af;
-        }
-
-        /* Link arrow animation */
-        .link-arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .glass-card:hover .link-arrow {
-            transform: translateX(6px);
-        }
-
-        /* Scroll reveal */
+        /* Gentle reveal animation */
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
-
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+        /* Soft scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #faf8f5; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-        ::-webkit-scrollbar-track {
-            background: #020204;
+        /* Gentle float for decorative elements */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
+        .gentle-float { animation: gentleFloat 5s ease-in-out infinite; }
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #8b5cf6, #06b6d4);
-            border-radius: 4px;
-        }
+        /* Link arrow */
+        .link-arrow { transition: transform 0.3s ease; }
+        .soft-card:hover .link-arrow { transform: translateX(5px); }
 
-        /* Pulse animation for live indicator */
-        @keyframes pulse-ring {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        .pulse-dot::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: currentColor;
-            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        /* Soft header */
+        .soft-header {
+            background: rgba(250, 248, 245, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
         }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative">
 
-    <!-- Background Effects -->
-    <div class="fixed inset-0 bg-grid -z-20"></div>
-    <div class="fixed top-0 left-1/3 w-[500px] h-[500px] bg-violet-600/8 rounded-full blur-[100px] -z-10 animate-pulse"></div>
-    <div class="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-cyan-600/8 rounded-full blur-[100px] -z-10 animate-pulse" style="animation-delay: 2s;"></div>
-    <div class="fixed top-1/2 left-1/2 w-[300px] h-[300px] bg-amber-600/5 rounded-full blur-[100px] -z-10 animate-pulse" style="animation-delay: 4s;"></div>
-
-    <!-- Floating Particles Container -->
-    <div id="particles" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden"></div>
+    <!-- Soft Background Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-violet-500/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="fixed top-0 left-0 right-0 z-50 soft-header">
+        <div class="max-w-5xl mx-auto px-6 sm:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fas fa-globe text-white text-lg"></i>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center shadow-sm">
+                        <i class="fas fa-cloud text-[#8d6e63] text-lg"></i>
                     </div>
-                    <span class="font-display font-bold text-xl sm:text-2xl tracking-wide">
-                        <span class="text-white">Explorer</span><span class="gradient-text">'s Hub</span>
+                    <span class="font-extrabold text-xl sm:text-2xl text-[#4a4a4a] tracking-tight">
+                        Explorer's Hub
                     </span>
                 </div>
-                <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Все системы онлайн</span>
+                <div class="text-sm font-semibold text-[#9e9e9e] hidden sm:block">
+                    Мои проекты
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Main -->
+    <main class="flex-grow pt-28 sm:pt-36 pb-20 px-6 sm:px-8 relative z-10">
         <div class="max-w-5xl mx-auto">
-            
-            <!-- Hero Section -->
-            <div class="text-center mb-16 sm:mb-24 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-violet-500/20 mb-8">
-                    <i class="fas fa-code text-violet-400 text-sm"></i>
-                    <span class="text-sm font-medium text-gray-300">GitHub Pages Portal</span>
+
+            <!-- Hero -->
+            <div class="text-center mb-16 sm:mb-20 reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-black/5 shadow-sm mb-8 gentle-float">
+                    <span class="w-2 h-2 rounded-full bg-[#81c784]"></span>
+                    <span class="text-sm font-bold text-[#7f8c8d]">Добро пожаловать</span>
                 </div>
-                
-                <h1 class="font-display font-black text-4xl sm:text-6xl lg:text-7xl mb-6 tracking-tight">
-                    <span class="text-white">Adapter to my</span><br>
-                    <span class="gradient-text">GitHub sites</span>
+
+                <h1 class="font-black text-4xl sm:text-5xl lg:text-6xl mb-5 tracking-tight text-[#4a4a4a] leading-tight">
+                    Adapter to my<br>
+                    <span class="text-[#e07a5f]">GitHub sites</span>
                 </h1>
-                
-                <p class="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-                    Центральный узел доступа ко всем моим проектам. Выбирай, куда хочешь отправиться.
+
+                <p class="text-[#7f8c8d] text-lg sm:text-xl max-w-lg mx-auto leading-relaxed font-medium">
+                    Уютная страничка со всеми моими проектами. Выбирай, куда хочешь заглянуть.
                 </p>
             </div>
 
             <!-- Projects Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
-                
-                <!-- Project 1: AternosUnlimited -->
-                <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer" 
-                   class="glass-card rounded-2xl p-8 group relative overflow-hidden reveal block" style="transition-delay: 0.1s;">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 rounded-full blur-3xl -z-10 group-hover:bg-violet-600/20 transition-all duration-500"></div>
-                    
+
+                <!-- AternosUnlimited -->
+                <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer"
+                   class="soft-card card-coral rounded-3xl p-7 sm:p-8 group block reveal" style="transition-delay: 0.1s;">
                     <div class="flex items-start justify-between mb-6">
-                        <div class="project-icon w-14 h-14 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
-                            <i class="fas fa-bolt text-2xl"></i>
+                        <div class="w-14 h-14 rounded-2xl icon-coral flex items-center justify-center text-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                            <i class="fas fa-bolt"></i>
                         </div>
-                        <span class="badge-live relative px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                            <span class="relative z-10">Live</span>
+                        <span class="badge-soft-green px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
+                            Live
                         </span>
                     </div>
-                    
-                    <h3 class="font-display font-bold text-xl text-white mb-2 group-hover:text-violet-300 transition-colors">AternosUnlimited</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                        Утилита для бесперебойной работы серверов Aternos 24/7. Стабильность, автоматика и никаких отключений.
+
+                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2 group-hover:text-[#e07a5f] transition-colors">AternosUnlimited</h3>
+                    <p class="text-[#7f8c8d] text-sm leading-relaxed mb-6 font-medium">
+                        Утилита для бесперебойной работы серверов Aternos 24/7. Никаких отключений и лагов.
                     </p>
-                    
-                    <div class="flex items-center justify-between pt-4 border-t border-violet-500/10">
-                        <span class="text-xs text-gray-500 font-mono">exploorer.github.io/aternosunlimited</span>
-                        <i class="fas fa-arrow-right text-violet-400 link-arrow"></i>
+
+                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
+                        <span class="text-xs text-[#bdbdbd] font-mono truncate max-w-[180px]">exploorer.github.io/aternosunlimited</span>
+                        <i class="fas fa-arrow-right text-[#e07a5f] link-arrow text-sm"></i>
                     </div>
                 </a>
 
-                <!-- Project 2: EnergoYadro -->
-                <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer" 
-                   class="glass-card rounded-2xl p-8 group relative overflow-hidden reveal block" style="transition-delay: 0.2s;">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-600/10 rounded-full blur-3xl -z-10 group-hover:bg-amber-600/20 transition-all duration-500"></div>
-                    
+                <!-- EnergoYadro -->
+                <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer"
+                   class="soft-card card-mint rounded-3xl p-7 sm:p-8 group block reveal" style="transition-delay: 0.2s;">
                     <div class="flex items-start justify-between mb-6">
-                        <div class="project-icon w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                            <i class="fas fa-atom text-2xl"></i>
+                        <div class="w-14 h-14 rounded-2xl icon-mint flex items-center justify-center text-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                            <i class="fas fa-atom"></i>
                         </div>
-                        <span class="badge-game relative px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                            <span class="relative z-10">Game</span>
+                        <span class="badge-soft-orange px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
+                            Game
                         </span>
                     </div>
-                    
-                    <h3 class="font-display font-bold text-xl text-white mb-2 group-hover:text-amber-300 transition-colors">Енерго Ядро</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                        Кликер-игра про энергетическое ядро. Нажимай, улучшай, генерируй энергию и открывай новые уровни мощности.
+
+                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2 group-hover:text-[#2a9d8f] transition-colors">Енерго Ядро</h3>
+                    <p class="text-[#7f8c8d] text-sm leading-relaxed mb-6 font-medium">
+                        Кликер-игра про энергетическое ядро. Нажимай, улучшай и генерируй мощность.
                     </p>
-                    
-                    <div class="flex items-center justify-between pt-4 border-t border-amber-500/10">
-                        <span class="text-xs text-gray-500 font-mono">exploorer.github.io/energoyadro</span>
-                        <i class="fas fa-arrow-right text-amber-400 link-arrow"></i>
+
+                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
+                        <span class="text-xs text-[#bdbdbd] font-mono truncate max-w-[180px]">exploorer.github.io/energoyadro</span>
+                        <i class="fas fa-arrow-right text-[#2a9d8f] link-arrow text-sm"></i>
                     </div>
                 </a>
 
-                <!-- Project 3: Coming Soon -->
-                <div class="glass-card rounded-2xl p-8 group relative overflow-hidden reveal opacity-70 hover:opacity-100" style="transition-delay: 0.3s;">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gray-600/5 rounded-full blur-3xl -z-10"></div>
-                    
+                <!-- Coming Soon -->
+                <div class="soft-card card-gray rounded-3xl p-7 sm:p-8 group reveal opacity-70 hover:opacity-100" style="transition-delay: 0.3s;">
                     <div class="flex items-start justify-between mb-6">
-                        <div class="project-icon w-14 h-14 rounded-xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-400">
-                            <i class="fas fa-rocket text-2xl"></i>
+                        <div class="w-14 h-14 rounded-2xl icon-gray flex items-center justify-center text-xl">
+                            <i class="fas fa-rocket"></i>
                         </div>
-                        <span class="badge-soon px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Soon</span>
+                        <span class="badge-soft-gray px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
+                            Soon
+                        </span>
                     </div>
-                    
-                    <h3 class="font-display font-bold text-xl text-white mb-2">Coming Soon</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-6">
-                        Новый проект находится в разработке. Следи за обновлениями — скоро здесь появится что-то крутое.
+
+                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2">Coming Soon</h3>
+                    <p class="text-[#9e9e9e] text-sm leading-relaxed mb-6 font-medium">
+                        Новый проект в разработке. Скоро здесь появится что-то интересное.
                     </p>
-                    
-                    <div class="flex items-center justify-between pt-4 border-t border-gray-500/10">
-                        <span class="text-xs text-gray-600 font-mono">—</span>
-                        <i class="fas fa-lock text-gray-600"></i>
+
+                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
+                        <span class="text-xs text-[#bdbdbd] font-mono">—</span>
+                        <i class="fas fa-lock text-[#bdbdbd] text-sm"></i>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Quote / Ending -->
+            <!-- Quote -->
             <div class="text-center reveal" style="transition-delay: 0.4s;">
-                <div class="inline-block glass rounded-2xl px-8 py-6 border border-violet-500/10">
-                    <p class="text-gray-500 italic text-lg">
-                        <i class="fas fa-quote-left text-violet-500/30 text-sm mr-2"></i>
+                <div class="inline-block soft-card rounded-3xl px-8 py-6 max-w-md">
+                    <p class="text-[#9e9e9e] italic text-base font-medium leading-relaxed">
+                        <i class="fas fa-quote-left text-[#ffd6c2] text-sm mr-2"></i>
                         That's where all my projects ended.
-                        <i class="fas fa-quote-right text-violet-500/30 text-sm ml-2"></i>
+                        <i class="fas fa-quote-right text-[#ffd6c2] text-sm ml-2"></i>
                     </p>
                 </div>
             </div>
@@ -332,68 +281,38 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-violet-500/10 py-8 px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer class="border-t border-black/5 py-8 px-6 sm:px-8 relative z-10">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
-                    <i class="fas fa-globe text-white text-xs"></i>
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center">
+                    <i class="fas fa-cloud text-[#8d6e63] text-xs"></i>
                 </div>
-                <span class="font-display font-bold text-sm text-gray-400">Explorer's Hub</span>
+                <span class="font-extrabold text-sm text-[#9e9e9e]">Explorer's Hub</span>
             </div>
-            
-            <div class="flex items-center gap-6">
-                <a href="https://github.com/exploorer" target="_blank" rel="noopener noreferrer" 
-                   class="text-gray-500 hover:text-white transition-colors duration-300 flex items-center gap-2 text-sm">
-                    <i class="fab fa-github"></i>
-                    <span>GitHub</span>
-                </a>
-            </div>
-            
-            <div class="text-gray-600 text-xs">
-                © 2026 exploorer. Все проекты собраны здесь.
+
+            <a href="https://github.com/exploorer" target="_blank" rel="noopener noreferrer"
+               class="text-[#bdbdbd] hover:text-[#4a4a4a] transition-colors duration-300 flex items-center gap-2 text-sm font-bold">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+
+            <div class="text-[#bdbdbd] text-xs font-semibold">
+                © 2026 exploorer
             </div>
         </div>
     </footer>
 
     <script>
-        // Scroll Reveal
+        // Scroll reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // Generate particles
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 25; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDuration = (Math.random() * 8 + 8) + 's';
-            particle.style.animationDelay = Math.random() * 10 + 's';
-            particle.style.opacity = Math.random() * 0.4 + 0.1;
-            
-            // Random colors: violet, cyan, or amber
-            const colors = ['rgba(139, 92, 246, 0.4)', 'rgba(6, 182, 212, 0.4)', 'rgba(245, 158, 11, 0.3)'];
-            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-            
-            particlesContainer.appendChild(particle);
-        }
-
-        // Header shadow on scroll
-        const header = document.querySelector('header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 30) {
-                header.classList.add('shadow-lg', 'shadow-violet-500/5');
-            } else {
-                header.classList.remove('shadow-lg', 'shadow-violet-500/5');
-            }
-        });
     </script>
 </body>
 </html>
