@@ -3,114 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorer's Hub</title>
+    <title>Explorer's Hub — Мои проекты</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #faf8f5;
-            color: #4a4a4a;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
             overflow-x: hidden;
+            color: #fff;
         }
 
-        /* Soft blobs on background */
-        .blob {
+        /* ============================================
+           BAMBOO FOREST BACKGROUND
+           ============================================ */
+        .bamboo-bg {
             position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.35;
+            inset: 0;
             z-index: 0;
-            animation: breathe 8s ease-in-out infinite;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(120, 180, 100, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 30%, rgba(100, 160, 80, 0.3) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(140, 200, 100, 0.25) 0%, transparent 50%),
+                linear-gradient(180deg, #1a3a1a 0%, #0d280d 40%, #0a1f0a 100%);
+            overflow: hidden;
         }
 
-        .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: #ffd6c2;
-            top: -100px;
-            left: -100px;
+        /* Bamboo stalks */
+        .bamboo-stalk {
+            position: absolute;
+            bottom: 0;
+            width: 12px;
+            background: linear-gradient(90deg, 
+                rgba(180, 220, 140, 0.15) 0%, 
+                rgba(140, 200, 100, 0.35) 20%, 
+                rgba(160, 210, 120, 0.25) 50%,
+                rgba(120, 180, 90, 0.3) 80%,
+                rgba(100, 160, 80, 0.15) 100%);
+            border-radius: 6px 6px 0 0;
+            box-shadow: 
+                inset 2px 0 4px rgba(200, 255, 150, 0.1),
+                inset -2px 0 4px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(120, 200, 80, 0.05);
         }
 
-        .blob-2 {
-            width: 350px;
-            height: 350px;
-            background: #c8f6e8;
-            bottom: -80px;
-            right: -80px;
-            animation-delay: 2s;
+        .bamboo-stalk::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(100, 60, 30, 0.3);
+            box-shadow: 0 1px 0 rgba(200, 255, 150, 0.1);
         }
 
-        .blob-3 {
-            width: 300px;
-            height: 300px;
-            background: #fff0c2;
-            top: 40%;
-            left: 60%;
-            animation-delay: 4s;
+        .bamboo-stalk::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(100, 60, 30, 0.25);
+            box-shadow: 0 1px 0 rgba(200, 255, 150, 0.08);
         }
 
-        @keyframes breathe {
-            0%, 100% { transform: scale(1) translate(0, 0); }
-            33% { transform: scale(1.1) translate(20px, -20px); }
-            66% { transform: scale(0.95) translate(-10px, 10px); }
+        /* Leaves */
+        .leaf {
+            position: absolute;
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(135deg, 
+                rgba(160, 230, 120, 0.5) 0%, 
+                rgba(100, 180, 80, 0.4) 50%,
+                rgba(80, 160, 60, 0.2) 100%);
+            border-radius: 0 80% 0 80%;
+            transform-origin: left center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            animation: leafSway 6s ease-in-out infinite;
         }
 
-        /* Soft card style */
-        .soft-card {
-            background: rgba(255, 255, 255, 0.85);
+        @keyframes leafSway {
+            0%, 100% { transform: rotate(-5deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        /* Light rays */
+        .light-ray {
+            position: absolute;
+            top: -20%;
+            width: 100px;
+            height: 140%;
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 220, 0.08) 0%, 
+                rgba(255, 255, 200, 0.03) 50%,
+                transparent 100%);
+            transform: rotate(15deg);
+            filter: blur(20px);
+            animation: rayMove 12s ease-in-out infinite;
+        }
+
+        @keyframes rayMove {
+            0%, 100% { opacity: 0.5; transform: rotate(15deg) translateX(0); }
+            50% { opacity: 0.8; transform: rotate(15deg) translateX(30px); }
+        }
+
+        /* ============================================
+           LIQUID GLASS EFFECT
+           ============================================ */
+        .liquid-glass {
+            position: relative;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(50px) saturate(200%);
+            -webkit-backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+                0 20px 50px rgba(0, 0, 0, 0.15),
+                0 8px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Specular highlight - the key to liquid glass */
+        .liquid-glass::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1.4px;
+            background: linear-gradient(180deg,
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(255, 255, 255, 0.4) 20%,
+                rgba(255, 255, 255, 0) 40%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0.1) 80%,
+                rgba(255, 255, 255, 0.3) 100%);
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        /* Inner glow/shine */
+        .liquid-glass::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.8),
+                transparent);
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        /* Thicker glass variant */
+        .liquid-glass-thick {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(80px) saturate(220%);
+            -webkit-backdrop-filter: blur(80px) saturate(220%);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 120px 20px 60px;
+        }
+
+        /* Header pill */
+        .header-pill {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 12px 28px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .header-pill:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(-50%) scale(1.02);
+        }
+
+        /* Main glass card */
+        .hero-glass {
+            width: 100%;
+            max-width: 640px;
+            padding: 48px 40px;
+            border-radius: 36px;
+            text-align: center;
+            margin-bottom: 32px;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .hero-glass:hover {
+            transform: scale(1.01);
+        }
+
+        /* Project cards */
+        .project-card {
+            border-radius: 28px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.6),
+                0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .project-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-live {
+            background: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-game {
+            background: rgba(245, 158, 11, 0.25);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-soon {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Icon containers */
+        .icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.4s ease;
         }
 
-        .soft-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
+        .project-card:hover .icon-box {
+            transform: scale(1.1) rotate(4deg);
+            background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Specific card hover tints */
-        .card-coral:hover { box-shadow: 0 20px 48px rgba(255, 150, 120, 0.15), 0 4px 12px rgba(0,0,0,0.03); border-color: rgba(255, 150, 120, 0.2); }
-        .card-mint:hover { box-shadow: 0 20px 48px rgba(80, 200, 160, 0.15), 0 4px 12px rgba(0,0,0,0.03); border-color: rgba(80, 200, 160, 0.2); }
-        .card-gray:hover { box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0,0,0,0.03); }
-
-        /* Soft icon containers */
-        .icon-coral { background: #fff0eb; color: #e07a5f; }
-        .icon-mint { background: #e8f5f0; color: #2a9d8f; }
-        .icon-gray { background: #f0f0f0; color: #9ca3af; }
-
-        /* Soft badges */
-        .badge-soft-green {
-            background: #e8f5e9;
-            color: #388e3c;
-        }
-        .badge-soft-orange {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        .badge-soft-gray {
-            background: #f5f5f5;
-            color: #9e9e9e;
+        /* Typography */
+        .title {
+            font-size: clamp(2.2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* Gentle reveal animation */
+        .subtitle {
+            font-size: 1.05rem;
+            font-weight: 500;
+            line-height: 1.6;
+            opacity: 0.85;
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Link row */
+        .link-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .link-text {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            opacity: 0.5;
+            letter-spacing: -0.02em;
+        }
+
+        .link-arrow {
+            transition: transform 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .project-card:hover .link-arrow {
+            transform: translateX(4px);
+            opacity: 1;
+        }
+
+        /* Scroll reveal */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -121,188 +361,225 @@
             transform: translateY(0);
         }
 
-        /* Soft scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #faf8f5; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-        /* Gentle float for decorative elements */
-        @keyframes gentleFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        /* Footer */
+        .footer-glass {
+            margin-top: auto;
+            padding: 16px 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
         }
-        .gentle-float { animation: gentleFloat 5s ease-in-out infinite; }
 
-        /* Link arrow */
-        .link-arrow { transition: transform 0.3s ease; }
-        .soft-card:hover .link-arrow { transform: translateX(5px); }
+        /* Subtle noise texture overlay */
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 128px;
+        }
 
-        /* Soft header */
-        .soft-header {
-            background: rgba(250, 248, 245, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.04);
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero-glass { padding: 36px 24px; border-radius: 28px; }
+            .project-card { padding: 24px; border-radius: 24px; }
+            .main-container { padding: 100px 16px 40px; }
+            .header-pill { padding: 10px 20px; }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col relative">
+<body>
 
-    <!-- Soft Background Blobs -->
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+    <!-- Bamboo Forest Background -->
+    <div class="bamboo-bg" id="bambooBg"></div>
+    
+    <!-- Film grain noise -->
+    <div class="noise"></div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 soft-header">
-        <div class="max-w-5xl mx-auto px-6 sm:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-20">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center shadow-sm">
-                        <i class="fas fa-cloud text-[#8d6e63] text-lg"></i>
-                    </div>
-                    <span class="font-extrabold text-xl sm:text-2xl text-[#4a4a4a] tracking-tight">
-                        Explorer's Hub
-                    </span>
-                </div>
-                <div class="text-sm font-semibold text-[#9e9e9e] hidden sm:block">
-                    Пасхалочка
-                </div>
-            </div>
+    <header class="liquid-glass header-pill">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#a8e6cf] to-[#7fcdbb] flex items-center justify-center shadow-sm">
+            <i class="fas fa-cloud text-[#2d5a3d] text-sm"></i>
         </div>
+        <span class="font-bold text-sm tracking-tight text-white/90">Explorer's Hub</span>
     </header>
 
-    <!-- Main -->
-    <main class="flex-grow pt-28 sm:pt-36 pb-20 px-6 sm:px-8 relative z-10">
-        <div class="max-w-5xl mx-auto">
+    <!-- Main Content -->
+    <main class="main-container">
 
-            <!-- Hero -->
-            <div class="text-center mb-16 sm:mb-20 reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 border border-black/5 shadow-sm mb-8 gentle-float">
-                    <span class="w-2 h-2 rounded-full bg-[#81c784]"></span>
-                    <span class="text-sm font-bold text-[#7f8c8d]">Добро пожаловать</span>
-                </div>
-
-                <h1 class="font-black text-4xl sm:text-5xl lg:text-6xl mb-5 tracking-tight text-[#4a4a4a] leading-tight">
-                    Adapter to my<br>
-                    <span class="text-[#e07a5f]">GitHub sites</span>
-                </h1>
-
-                <p class="text-[#7f8c8d] text-lg sm:text-xl max-w-lg mx-auto leading-relaxed font-medium">
-                    Уютная страничка со всеми моими проектами. Выбирай, куда хочешь заглянуть.
-                </p>
+        <!-- Hero Glass Card -->
+        <div class="liquid-glass liquid-glass-thick hero-glass reveal">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
+                <span class="text-xs font-semibold text-white/70">GitHub Pages Portal</span>
             </div>
 
-            <!-- Projects Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+            <h1 class="title mb-5">
+                Adapter to my<br>
+                <span class="text-[#a8e6cf]">GitHub sites</span>
+            </h1>
 
-                <!-- AternosUnlimited -->
-                <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer"
-                   class="soft-card card-coral rounded-3xl p-7 sm:p-8 group block reveal" style="transition-delay: 0.1s;">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl icon-coral flex items-center justify-center text-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <span class="badge-soft-green px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
-                            Live
-                        </span>
-                    </div>
-
-                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2 group-hover:text-[#e07a5f] transition-colors">AternosUnlimited</h3>
-                    <p class="text-[#7f8c8d] text-sm leading-relaxed mb-6 font-medium">
-                        Утилита для бесперебойной работы серверов Aternos 24/7. Никаких отключений и лагов.
-                    </p>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
-                        <span class="text-xs text-[#bdbdbd] font-mono truncate max-w-[180px]">exploorer.github.io/aternosunlimited</span>
-                        <i class="fas fa-arrow-right text-[#e07a5f] link-arrow text-sm"></i>
-                    </div>
-                </a>
-
-                <!-- EnergoYadro -->
-                <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer"
-                   class="soft-card card-mint rounded-3xl p-7 sm:p-8 group block reveal" style="transition-delay: 0.2s;">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl icon-mint flex items-center justify-center text-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-                            <i class="fas fa-atom"></i>
-                        </div>
-                        <span class="badge-soft-orange px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
-                            Game
-                        </span>
-                    </div>
-
-                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2 group-hover:text-[#2a9d8f] transition-colors">Енерго Ядро</h3>
-                    <p class="text-[#7f8c8d] text-sm leading-relaxed mb-6 font-medium">
-                        Кликер-игра про энергетическое ядро. Нажимай, улучшай и генерируй мощность.
-                    </p>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
-                        <span class="text-xs text-[#bdbdbd] font-mono truncate max-w-[180px]">exploorer.github.io/energoyadro</span>
-                        <i class="fas fa-arrow-right text-[#2a9d8f] link-arrow text-sm"></i>
-                    </div>
-                </a>
-
-                <!-- Coming Soon -->
-                <div class="soft-card card-gray rounded-3xl p-7 sm:p-8 group reveal opacity-70 hover:opacity-100" style="transition-delay: 0.3s;">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="w-14 h-14 rounded-2xl icon-gray flex items-center justify-center text-xl">
-                            <i class="fas fa-rocket"></i>
-                        </div>
-                        <span class="badge-soft-gray px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
-                            Soon
-                        </span>
-                    </div>
-
-                    <h3 class="font-extrabold text-xl text-[#4a4a4a] mb-2">Coming Soon</h3>
-                    <p class="text-[#9e9e9e] text-sm leading-relaxed mb-6 font-medium">
-                        Новый проект в разработке. Скоро здесь появится что-то интересное.
-                    </p>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-black/5">
-                        <span class="text-xs text-[#bdbdbd] font-mono">—</span>
-                        <i class="fas fa-lock text-[#bdbdbd] text-sm"></i>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Quote -->
-            <div class="text-center reveal" style="transition-delay: 0.4s;">
-                <div class="inline-block soft-card rounded-3xl px-8 py-6 max-w-md">
-                    <p class="text-[#9e9e9e] italic text-base font-medium leading-relaxed">
-                        <i class="fas fa-quote-left text-[#ffd6c2] text-sm mr-2"></i>
-                        That's where all my projects ended.
-                        <i class="fas fa-quote-right text-[#ffd6c2] text-sm ml-2"></i>
-                    </p>
-                </div>
-            </div>
-
+            <p class="subtitle max-w-md mx-auto">
+                Уютная страничка со всеми моими проектами.<br>Выбирай, куда хочешь заглянуть.
+            </p>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-black/5 py-8 px-6 sm:px-8 relative z-10">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center">
-                    <i class="fas fa-cloud text-[#8d6e63] text-xs"></i>
+        <!-- Projects Grid -->
+        <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+            <!-- AternosUnlimited -->
+            <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer"
+               class="liquid-glass project-card reveal" style="transition-delay: 0.1s;">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="icon-box text-[#a8e6cf]">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <span class="badge badge-live">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Live
+                    </span>
                 </div>
-                <span class="font-extrabold text-sm text-[#9e9e9e]">Explorer's Hub</span>
-            </div>
 
-            <a href="https://github.com/exploorer" target="_blank" rel="noopener noreferrer"
-               class="text-[#bdbdbd] hover:text-[#4a4a4a] transition-colors duration-300 flex items-center gap-2 text-sm font-bold">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
+                <h3 class="font-bold text-lg mb-2 text-white tracking-tight">AternosUnlimited</h3>
+                <p class="text-sm text-white/60 leading-relaxed mb-4 font-medium">
+                    Утилита для бесперебойной работы серверов Aternos 24/7.
+                </p>
+
+                <div class="link-row">
+                    <span class="link-text">exploorer.github.io/aternosunlimited</span>
+                    <i class="fas fa-arrow-right text-white/70 link-arrow text-xs"></i>
+                </div>
             </a>
 
-            <div class="text-[#bdbdbd] text-xs font-semibold">
-                © 2026 exploorer
+            <!-- EnergoYadro -->
+            <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer"
+               class="liquid-glass project-card reveal" style="transition-delay: 0.2s;">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="icon-box text-[#ffd3b6]">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <span class="badge badge-game">
+                        <i class="fas fa-gamepad text-[10px]"></i>
+                        Game
+                    </span>
+                </div>
+
+                <h3 class="font-bold text-lg mb-2 text-white tracking-tight">Енерго Ядро</h3>
+                <p class="text-sm text-white/60 leading-relaxed mb-4 font-medium">
+                    Кликер-игра про энергетическое ядро. Нажимай и улучшай!
+                </p>
+
+                <div class="link-row">
+                    <span class="link-text">exploorer.github.io/energoyadro</span>
+                    <i class="fas fa-arrow-right text-white/70 link-arrow text-xs"></i>
+                </div>
+            </a>
+
+            <!-- Coming Soon -->
+            <div class="liquid-glass project-card reveal opacity-60 hover:opacity-100" style="transition-delay: 0.3s;">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="icon-box text-white/40">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <span class="badge badge-soon">Soon</span>
+                </div>
+
+                <h3 class="font-bold text-lg mb-2 text-white tracking-tight">Coming Soon</h3>
+                <p class="text-sm text-white/40 leading-relaxed mb-4 font-medium">
+                    Новый проект в разработке. Скоро здесь будет что-то крутое.
+                </p>
+
+                <div class="link-row">
+                    <span class="link-text">—</span>
+                    <i class="fas fa-lock text-white/30 text-xs"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quote -->
+        <div class="reveal mb-8" style="transition-delay: 0.4s;">
+            <div class="liquid-glass inline-block px-8 py-5 rounded-[28px] max-w-lg text-center">
+                <p class="text-white/50 italic text-sm font-medium leading-relaxed">
+                    <i class="fas fa-quote-left text-white/20 text-xs mr-2"></i>
+                    That's where all my projects ended.
+                    <i class="fas fa-quote-right text-white/20 text-xs ml-2"></i>
+                </p>
             </div>
         </div>
-    </footer>
+
+        <!-- Footer -->
+        <div class="reveal" style="transition-delay: 0.5s;">
+            <footer class="liquid-glass footer-glass">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-[#a8e6cf] to-[#7fcdbb] flex items-center justify-center">
+                        <i class="fas fa-cloud text-[#2d5a3d] text-[8px]"></i>
+                    </div>
+                    <span class="font-bold text-xs text-white/60">Explorer's Hub</span>
+                </div>
+                <div class="w-px h-4 bg-white/10"></div>
+                <a href="https://github.com/exploorer" target="_blank" rel="noopener noreferrer"
+                   class="text-white/40 hover:text-white/80 transition-colors text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </a>
+                <div class="w-px h-4 bg-white/10"></div>
+                <span class="text-white/30 text-xs">© 2026</span>
+            </footer>
+        </div>
+
+    </main>
 
     <script>
+        // Generate bamboo forest
+        const bg = document.getElementById('bambooBg');
+        const stalkCount = 18;
+
+        for (let i = 0; i < stalkCount; i++) {
+            const stalk = document.createElement('div');
+            stalk.className = 'bamboo-stalk';
+            const height = 60 + Math.random() * 40; // 60-100%
+            const left = Math.random() * 100;
+            const width = 8 + Math.random() * 16;
+            const delay = Math.random() * 3;
+            
+            stalk.style.height = height + '%';
+            stalk.style.left = left + '%';
+            stalk.style.width = width + 'px';
+            stalk.style.opacity = 0.3 + Math.random() * 0.4;
+            stalk.style.zIndex = Math.random() > 0.5 ? 1 : 0;
+            
+            // Add leaves to some stalks
+            if (Math.random() > 0.3) {
+                const leafCount = 1 + Math.floor(Math.random() * 3);
+                for (let j = 0; j < leafCount; j++) {
+                    const leaf = document.createElement('div');
+                    leaf.className = 'leaf';
+                    leaf.style.top = (20 + Math.random() * 60) + '%';
+                    leaf.style.left = (Math.random() > 0.5 ? -40 : 8) + 'px';
+                    leaf.style.transform = `rotate(${Math.random() > 0.5 ? -30 : 150}deg)`;
+                    leaf.style.animationDelay = (Math.random() * 6) + 's';
+                    leaf.style.opacity = 0.4 + Math.random() * 0.4;
+                    stalk.appendChild(leaf);
+                }
+            }
+            
+            bg.appendChild(stalk);
+        }
+
+        // Light rays
+        for (let i = 0; i < 3; i++) {
+            const ray = document.createElement('div');
+            ray.className = 'light-ray';
+            ray.style.left = (20 + i * 30) + '%';
+            ray.style.animationDelay = (i * 4) + 's';
+            bg.appendChild(ray);
+        }
+
         // Scroll reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -313,6 +590,17 @@
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Parallax on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            document.querySelectorAll('.bamboo-stalk').forEach((stalk, i) => {
+                const speed = 0.5 + (i % 3) * 0.3;
+                stalk.style.transform = `translate(${x * speed}px, ${y * speed * 0.5}px)`;
+            });
+        });
     </script>
 </body>
 </html>
