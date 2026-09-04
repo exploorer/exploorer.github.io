@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorer's Hub — Мои проекты</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Explorer's Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <style>
+        /* ============================================
+           ТОЧНЫЕ ПЕРЕМЕННЫЕ ИЗ ТВОЕГО index.css
+           ============================================ */
+        :root {
+            --tint-color: 255, 255, 255;
+            --tint-opacity: 0.06;
+            --shadow-blur: 20px;
+            --shadow-spread: -5px;
+            --shadow-color: rgba(255, 255, 255, 0.45);
+            --outer-shadow-blur: 24px;
+            --glass-radius: 60px;
+            --accent: #8b7cf7;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -18,131 +29,81 @@
             color: #2d2d2d;
             background: #faf8f5;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ============================================
-           SOFT BACKGROUND (из первой версии)
-           ============================================ */
-        .bg-blob {
+        /* Soft blobs background */
+        .blob {
             position: fixed;
             border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.35;
+            filter: blur(90px);
+            opacity: 0.3;
             z-index: 0;
             pointer-events: none;
-            animation: breathe 10s ease-in-out infinite;
+            animation: breathe 12s ease-in-out infinite;
         }
-
-        .blob-1 {
-            width: 450px; height: 450px;
-            background: #ffd6c2;
-            top: -120px; left: -100px;
-        }
-
-        .blob-2 {
-            width: 400px; height: 400px;
-            background: #c8f6e8;
-            bottom: -100px; right: -100px;
-            animation-delay: 3s;
-        }
-
-        .blob-3 {
-            width: 350px; height: 350px;
-            background: #fff0c2;
-            top: 45%; left: 55%;
-            animation-delay: 6s;
-        }
+        .blob-1 { width: 500px; height: 500px; background: #ffd6c2; top: -150px; left: -120px; }
+        .blob-2 { width: 450px; height: 450px; background: #c8f6e8; bottom: -120px; right: -120px; animation-delay: 4s; }
+        .blob-3 { width: 400px; height: 400px; background: #fff0c2; top: 40%; left: 50%; animation-delay: 8s; }
 
         @keyframes breathe {
             0%, 100% { transform: scale(1) translate(0, 0); }
-            33% { transform: scale(1.08) translate(15px, -15px); }
-            66% { transform: scale(0.96) translate(-8px, 8px); }
+            33% { transform: scale(1.06) translate(12px, -12px); }
+            66% { transform: scale(0.97) translate(-6px, 6px); }
         }
 
         /* ============================================
-           LIQUID GLASS — параметры из WebGL шейдера:
-           Blur: 6.5 | Tint: 4% | Specular: 0.00
-           Shadow: 0.00 | Thickness: 116 | Bezel: 53
-           IOR: 2.80
+           LIQUID GLASS — 1:1 из твоего CSS
            ============================================ */
         .glass {
             position: relative;
-            border-radius: 53px;                    /* Bezel: 53 */
-            overflow: hidden;
+            border-radius: var(--glass-radius);
+            cursor: default;
             isolation: isolate;
-            
-            /* Tint 4% — едва заметная белая подложка */
-            background: rgba(255, 255, 255, 0.04);
-            
-            /* Blur 6.5 + насыщенность из шейдера */
-            backdrop-filter: blur(6.5px) saturate(180%) brightness(1.02);
-            -webkit-backdrop-filter: blur(6.5px) saturate(180%) brightness(1.02);
-            
-            /* Thickness 116 — толстая стеклянная рамка */
-            border: 2.5px solid rgba(255, 255, 255, 0.22);
-            
-            /* Shadow: 0.00 — нет внешней тени! Только внутреннее свечение */
-            box-shadow: 
-                inset 0 1px 1px rgba(255, 255, 255, 0.4),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 0 30px rgba(255, 255, 255, 0.03);
-            
-            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            touch-action: none;
+            overflow: hidden;
+            /* Outer shadow — точно как в оригинале */
+            box-shadow: 0px 4px var(--outer-shadow-blur) rgba(0, 0, 0, 0.18);
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Слой 1: градиентная обводка = толщина стекла (Thickness 116) */
+        /* Слой 1: tint + inner shadow — ДОСЛОВНО из твоего CSS */
         .glass::before {
             content: '';
             position: absolute;
             inset: 0;
+            z-index: 1;
             border-radius: inherit;
-            padding: 2.5px; /* толщина кромки */
+            box-shadow: inset 0 0 var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+            background-color: rgba(var(--tint-color), var(--tint-opacity));
             pointer-events: none;
-            
-            /* Имитация преломления света на краях (IOR 2.80) */
-            background: linear-gradient(180deg,
-                rgba(255, 255, 255, 0.55) 0%,
-                rgba(255, 255, 255, 0.18) 18%,
-                rgba(255, 255, 255, 0) 40%,
-                rgba(255, 255, 255, 0) 60%,
-                rgba(255, 255, 255, 0.08) 82%,
-                rgba(255, 255, 255, 0.35) 100%
-            );
-            
-            -webkit-mask: 
-                linear-gradient(#fff 0 0) content-box, 
-                linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            
-            mix-blend-mode: overlay;
-            opacity: 0.9;
         }
 
-        /* Слой 2: Specular 0.00 — убираем яркий блик, 
-           но оставляем микро-полоску для реалистичности грани */
+        /* Слой 2: backdrop-filter с SVG — ДОСЛОВНО из твоего CSS */
         .glass::after {
             content: '';
             position: absolute;
-            top: 1px;
-            left: 18%;
-            right: 18%;
-            height: 0.8px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-            filter: blur(0.3px);
-            pointer-events: none;
-            opacity: 0.4; /* почти не видно, т.к. specular = 0 */
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            backdrop-filter: url(#liquid-glass-filter);
+            -webkit-backdrop-filter: url(#liquid-glass-filter);
+            isolation: isolate;
         }
 
-        /* Hover: лёгкое усиление стекла */
+        /* Hover для карточек */
+        .glass-hover {
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
         .glass-hover:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.32);
-            box-shadow: 
-                inset 0 1px 1px rgba(255, 255, 255, 0.5),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.15),
-                inset 0 0 40px rgba(255, 255, 255, 0.05);
             transform: translateY(-6px) scale(1.01);
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
+        }
+        .glass-hover:active {
+            transform: scale(0.98);
         }
 
         /* ============================================
@@ -158,7 +119,6 @@
             padding: 120px 20px 60px;
         }
 
-        /* Header */
         .header-glass {
             position: fixed;
             top: 24px;
@@ -170,31 +130,20 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: default;
         }
 
-        /* Hero — Width: 608, Height: 328, Radius: 100 (адаптивно 53) */
         .hero-glass {
             width: 100%;
-            max-width: 608px;
+            max-width: 600px;
             padding: 52px 44px;
             margin-bottom: 32px;
             text-align: center;
         }
 
-        /* Project cards */
         .project-glass {
-            display: block;
-            text-decoration: none;
-            color: inherit;
             padding: 36px;
-            cursor: pointer;
-        }
-        .project-glass:active {
-            transform: scale(0.98);
         }
 
-        /* Typography */
         .title {
             font-size: clamp(2.3rem, 5.5vw, 3.4rem);
             font-weight: 900;
@@ -206,10 +155,9 @@
             font-size: 1.05rem;
             font-weight: 500;
             line-height: 1.65;
-            color: #666;
+            color: #555;
         }
 
-        /* Icon boxes */
         .icon-box {
             width: 50px; height: 50px;
             border-radius: 16px;
@@ -217,17 +165,16 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            background: rgba(255, 255, 255, 0.35);
-            border: 1.5px solid rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.4);
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
             transition: all 0.4s ease;
         }
         .glass-hover:hover .icon-box {
             transform: scale(1.1) rotate(4deg);
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.55);
         }
 
-        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -246,7 +193,6 @@
         .badge-game { color: #d97706; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.15); }
         .badge-soon { color: #aaa; background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.05); }
 
-        /* Link row */
         .link-row {
             display: flex;
             align-items: center;
@@ -270,7 +216,6 @@
             color: #888;
         }
 
-        /* Footer */
         .footer-glass {
             display: inline-flex;
             align-items: center;
@@ -280,7 +225,12 @@
             margin-top: auto;
         }
 
-        /* Scroll reveal */
+        /* Контент поверх слоёв стекла */
+        .glass-content {
+            position: relative;
+            z-index: 2;
+        }
+
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -291,30 +241,43 @@
             transform: translateY(0);
         }
 
-        /* Responsive */
         @media (max-width: 640px) {
-            .hero-glass { padding: 36px 24px; border-radius: 36px; }
-            .project-glass { padding: 28px; border-radius: 36px; }
+            .hero-glass { padding: 36px 24px; --glass-radius: 40px; }
+            .project-glass { padding: 28px; --glass-radius: 36px; }
             .page { padding: 100px 16px 40px; }
-            .glass { border-radius: 36px; }
-            .glass::before { padding: 2px; }
+            .glass { --glass-radius: 36px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Soft Background Blobs -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-    <div class="bg-blob blob-3"></div>
+    <!-- SVG Filter — приближённый liquid glass (blur 6.5 + saturate) -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <defs>
+            <filter id="liquid-glass-filter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6.5" result="blur"/>
+                <feColorMatrix in="blur" type="saturate" values="1.8" result="saturated"/>
+                <feComponentTransfer in="saturated">
+                    <feFuncR type="linear" slope="1.02" intercept="0.01"/>
+                    <feFuncG type="linear" slope="1.02" intercept="0.01"/>
+                    <feFuncB type="linear" slope="1.02" intercept="0.01"/>
+                </feComponentTransfer>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Soft Background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
     <!-- Header -->
     <header class="glass header-glass">
-        <div class="flex items-center gap-3 relative z-10">
+        <div class="glass-content flex items-center gap-3">
             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center shadow-sm">
                 <i class="fas fa-cloud text-[#8d6e63] text-sm"></i>
             </div>
-            <span class="font-bold text-sm tracking-tight text-[#4a4a4a]">Explorer's Hub</span>
+            <span class="font-bold text-sm tracking-tight text-[#3d3d3d]">Explorer's Hub</span>
         </div>
     </header>
 
@@ -323,10 +286,10 @@
 
         <!-- Hero -->
         <div class="glass hero-glass reveal">
-            <div class="relative z-10">
+            <div class="glass-content">
                 <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/40 border border-black/5 mb-7 backdrop-blur-sm">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-[11px] font-bold text-[#888] tracking-wide">GITHUB PAGES PORTAL</span>
+                    <span class="text-[11px] font-bold text-[#777] tracking-wide">GITHUB PAGES PORTAL</span>
                 </div>
 
                 <h1 class="title mb-5">
@@ -346,7 +309,7 @@
             <!-- AternosUnlimited -->
             <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer"
                class="glass glass-hover project-glass reveal" style="transition-delay: 0.1s;">
-                <div class="relative z-10">
+                <div class="glass-content">
                     <div class="flex items-start justify-between mb-5">
                         <div class="icon-box text-[#e07a5f]">
                             <i class="fas fa-bolt"></i>
@@ -357,7 +320,7 @@
                         </span>
                     </div>
                     <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">AternosUnlimited</h3>
-                    <p class="text-sm text-[#777] leading-relaxed mb-5 font-medium">
+                    <p class="text-sm text-[#666] leading-relaxed mb-5 font-medium">
                         Утилита для бесперебойной работы серверов Aternos 24/7.
                     </p>
                     <div class="link-row">
@@ -370,7 +333,7 @@
             <!-- EnergoYadro -->
             <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer"
                class="glass glass-hover project-glass reveal" style="transition-delay: 0.2s;">
-                <div class="relative z-10">
+                <div class="glass-content">
                     <div class="flex items-start justify-between mb-5">
                         <div class="icon-box text-[#d97706]">
                             <i class="fas fa-atom"></i>
@@ -381,7 +344,7 @@
                         </span>
                     </div>
                     <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">Енерго Ядро</h3>
-                    <p class="text-sm text-[#777] leading-relaxed mb-5 font-medium">
+                    <p class="text-sm text-[#666] leading-relaxed mb-5 font-medium">
                         Кликер-игра про энергетическое ядро. Нажимай и улучшай!
                     </p>
                     <div class="link-row">
@@ -393,7 +356,7 @@
 
             <!-- Coming Soon -->
             <div class="glass project-glass reveal opacity-60 hover:opacity-100" style="transition-delay: 0.3s;">
-                <div class="relative z-10">
+                <div class="glass-content">
                     <div class="flex items-start justify-between mb-5">
                         <div class="icon-box text-[#bbb]">
                             <i class="fas fa-rocket"></i>
@@ -401,7 +364,7 @@
                         <span class="badge badge-soon">Soon</span>
                     </div>
                     <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">Coming Soon</h3>
-                    <p class="text-sm text-[#aaa] leading-relaxed mb-5 font-medium">
+                    <p class="text-sm text-[#999] leading-relaxed mb-5 font-medium">
                         Новый проект в разработке. Скоро здесь будет что-то крутое.
                     </p>
                     <div class="link-row">
@@ -416,11 +379,11 @@
         <!-- Quote -->
         <div class="reveal mb-8" style="transition-delay: 0.4s;">
             <div class="glass inline-block px-8 py-5 max-w-lg text-center">
-                <div class="relative z-10">
-                    <p class="text-[#aaa] italic text-sm font-medium leading-relaxed">
-                        <i class="fas fa-quote-left text-[#ddd] text-xs mr-2"></i>
+                <div class="glass-content">
+                    <p class="text-[#999] italic text-sm font-medium leading-relaxed">
+                        <i class="fas fa-quote-left text-[#ccc] text-xs mr-2"></i>
                         That's where all my projects ended.
-                        <i class="fas fa-quote-right text-[#ddd] text-xs ml-2"></i>
+                        <i class="fas fa-quote-right text-[#ccc] text-xs ml-2"></i>
                     </p>
                 </div>
             </div>
@@ -429,19 +392,19 @@
         <!-- Footer -->
         <div class="reveal" style="transition-delay: 0.5s;">
             <footer class="glass footer-glass">
-                <div class="relative z-10 flex items-center gap-5">
+                <div class="glass-content flex items-center gap-5">
                     <div class="flex items-center gap-2.5">
                         <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center">
                             <i class="fas fa-cloud text-[#8d6e63] text-[8px]"></i>
                         </div>
-                        <span class="font-bold text-xs text-[#999]">Explorer's Hub</span>
+                        <span class="font-bold text-xs text-[#888]">Explorer's Hub</span>
                     </div>
                     <div class="w-px h-3.5 bg-black/8"></div>
-                    <a href="https://github.com/exploorer" target="_blank" class="text-[#bbb] hover:text-[#666] transition-colors text-xs font-bold flex items-center gap-1.5">
+                    <a href="https://github.com/exploorer" target="_blank" class="text-[#aaa] hover:text-[#555] transition-colors text-xs font-bold flex items-center gap-1.5">
                         <i class="fab fa-github"></i> GitHub
                     </a>
                     <div class="w-px h-3.5 bg-black/8"></div>
-                    <span class="text-[#ccc] text-xs">© 2026</span>
+                    <span class="text-[#bbb] text-xs">© 2026</span>
                 </div>
             </footer>
         </div>
@@ -449,7 +412,6 @@
     </main>
 
     <script>
-        // Scroll reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
