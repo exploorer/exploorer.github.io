@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorer's Hub</title>
+    <title>Explorer's Hub — Мои проекты</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,102 +15,98 @@
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             min-height: 100vh;
-            color: #fff;
-            
-            /* Фон леса — тот же, что в твоём приложении */
-            background-image: url('https://images.unsplash.com/photo-1448375240586-dfd8f3793300?w=1920&q=85');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            color: #2d2d2d;
+            background: #faf8f5;
+            overflow-x: hidden;
         }
 
         /* ============================================
-           LIQUID GLASS — точные параметры со скрина
-           ============================================
-           Blur: 6.5 | Tint: 4% | Specular: 0 | Shadow: 0
-           Thickness: 116 | Bezel: 53 | IOR: 2.80
+           SOFT BACKGROUND (из первой версии)
+           ============================================ */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            animation: breathe 10s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 450px; height: 450px;
+            background: #ffd6c2;
+            top: -120px; left: -100px;
+        }
+
+        .blob-2 {
+            width: 400px; height: 400px;
+            background: #c8f6e8;
+            bottom: -100px; right: -100px;
+            animation-delay: 3s;
+        }
+
+        .blob-3 {
+            width: 350px; height: 350px;
+            background: #fff0c2;
+            top: 45%; left: 55%;
+            animation-delay: 6s;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1) translate(0, 0); }
+            33% { transform: scale(1.08) translate(15px, -15px); }
+            66% { transform: scale(0.96) translate(-8px, 8px); }
+        }
+
+        /* ============================================
+           LIQUID GLASS — параметры из WebGL шейдера:
+           Blur: 6.5 | Tint: 4% | Specular: 0.00
+           Shadow: 0.00 | Thickness: 116 | Bezel: 53
+           IOR: 2.80
            ============================================ */
         .glass {
             position: relative;
-            border-radius: 53px; /* Radius 100 → адаптивно 53px для карточек */
+            border-radius: 53px;                    /* Bezel: 53 */
             overflow: hidden;
             isolation: isolate;
             
-            /* Tint 4% — лёгкая зеленоватая тонировка */
-            background: rgba(30, 45, 30, 0.04);
+            /* Tint 4% — едва заметная белая подложка */
+            background: rgba(255, 255, 255, 0.04);
             
-            /* Blur 6.5 — размытие того, что за стеклом */
-            backdrop-filter: blur(6.5px) saturate(180%) brightness(1.05);
-            -webkit-backdrop-filter: blur(6.5px) saturate(180%) brightness(1.05);
+            /* Blur 6.5 + насыщенность из шейдера */
+            backdrop-filter: blur(6.5px) saturate(180%) brightness(1.02);
+            -webkit-backdrop-filter: blur(6.5px) saturate(180%) brightness(1.02);
             
-            /* Shadow: 0 — нет внешней тени! Только внутренняя глубина */
+            /* Thickness 116 — толстая стеклянная рамка */
+            border: 2.5px solid rgba(255, 255, 255, 0.22);
+            
+            /* Shadow: 0.00 — нет внешней тени! Только внутреннее свечение */
             box-shadow: 
-                inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                inset 0 1px 1px rgba(255, 255, 255, 0.4),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 30px rgba(255, 255, 255, 0.03);
+            
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Слой рефракции — IOR 2.80 (сильное искажение/увеличение) */
+        /* Слой 1: градиентная обводка = толщина стекла (Thickness 116) */
         .glass::before {
             content: '';
             position: absolute;
-            inset: -40px; /* выходим за края для параллакса */
-            z-index: 0;
-            
-            /* Тот же фон, но сильно искажённый = IOR эффект */
-            background-image: url('https://images.unsplash.com/photo-1448375240586-dfd8f3793300?w=1920&q=85');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            
-            /* IOR 2.80: сильное увеличение + размытие + насыщенность */
-            transform: scale(1.25);
-            filter: blur(12px) saturate(220%) brightness(1.15) contrast(0.85);
-            opacity: 0.65;
-            
-            /* Маска, чтобы края растворялись в стекле */
-            mask-image: linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.4) 0%,
-                rgba(0,0,0,0.9) 20%,
-                rgba(0,0,0,1) 40%,
-                rgba(0,0,0,1) 60%,
-                rgba(0,0,0,0.9) 80%,
-                rgba(0,0,0,0.4) 100%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.4) 0%,
-                rgba(0,0,0,0.9) 20%,
-                rgba(0,0,0,1) 40%,
-                rgba(0,0,0,1) 60%,
-                rgba(0,0,0,0.9) 80%,
-                rgba(0,0,0,0.4) 100%
-            );
-        }
-
-        /* Толщина стекла 116 + Bezel 53 */
-        .glass::after {
-            content: '';
-            position: absolute;
             inset: 0;
-            z-index: 5;
             border-radius: inherit;
+            padding: 2.5px; /* толщина кромки */
             pointer-events: none;
             
-            /* Толстая рамка = Thickness 116 */
-            padding: 9px;
-            
-            /* Градиент имитирует толщину стекла с преломлением света */
+            /* Имитация преломления света на краях (IOR 2.80) */
             background: linear-gradient(180deg,
-                rgba(255, 255, 255, 0.45) 0%,
-                rgba(255, 255, 255, 0.15) 15%,
-                rgba(160, 200, 140, 0.25) 30%,  /* зеленоватый оттенок от леса */
-                rgba(255, 255, 255, 0) 45%,
-                rgba(255, 255, 255, 0) 55%,
-                rgba(140, 180, 120, 0.2) 70%,
-                rgba(255, 255, 255, 0.25) 85%,
-                rgba(255, 255, 255, 0.5) 100%
+                rgba(255, 255, 255, 0.55) 0%,
+                rgba(255, 255, 255, 0.18) 18%,
+                rgba(255, 255, 255, 0) 40%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0.08) 82%,
+                rgba(255, 255, 255, 0.35) 100%
             );
             
             -webkit-mask: 
@@ -119,28 +115,34 @@
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             
-            mix-blend-mode: screen;
-            opacity: 0.85;
+            mix-blend-mode: overlay;
+            opacity: 0.9;
         }
 
-        /* Specular: 0.00 — убираем яркий верхний блик, 
-           но оставляем едва заметную полоску для реалистичности */
-        .glass-shine {
+        /* Слой 2: Specular 0.00 — убираем яркий блик, 
+           но оставляем микро-полоску для реалистичности грани */
+        .glass::after {
+            content: '';
             position: absolute;
             top: 1px;
-            left: 15%;
-            right: 15%;
-            height: 0.5px;
-            z-index: 6;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            left: 18%;
+            right: 18%;
+            height: 0.8px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            filter: blur(0.3px);
             pointer-events: none;
-            opacity: 0.3; /* почти не видно, т.к. specular 0 */
+            opacity: 0.4; /* почти не видно, т.к. specular = 0 */
         }
 
-        /* Контент поверх */
-        .glass-content {
-            position: relative;
-            z-index: 2;
+        /* Hover: лёгкое усиление стекла */
+        .glass-hover:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.32);
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+                inset 0 0 40px rgba(255, 255, 255, 0.05);
+            transform: translateY(-6px) scale(1.01);
         }
 
         /* ============================================
@@ -168,25 +170,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: transform 0.3s ease;
-        }
-        .header-glass:hover {
-            transform: translateX(-50%) scale(1.03);
+            cursor: default;
         }
 
-        /* Hero — Width: 608, Height: 328, Radius: 100 */
+        /* Hero — Width: 608, Height: 328, Radius: 100 (адаптивно 53) */
         .hero-glass {
             width: 100%;
             max-width: 608px;
-            min-height: 200px;
-            padding: 48px 40px;
-            margin-bottom: 28px;
+            padding: 52px 44px;
+            margin-bottom: 32px;
             text-align: center;
-            border-radius: 53px; /* 100 → пропорционально */
-            transition: transform 0.4s ease;
-        }
-        .hero-glass:hover {
-            transform: scale(1.01);
         }
 
         /* Project cards */
@@ -194,15 +187,8 @@
             display: block;
             text-decoration: none;
             color: inherit;
-            padding: 32px;
-            border-radius: 40px;
+            padding: 36px;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .project-glass:hover {
-            transform: translateY(-6px) scale(1.02);
-            /* Shadow остаётся 0, но добавляем лёгкую подсветку */
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
         }
         .project-glass:active {
             transform: scale(0.98);
@@ -210,37 +196,35 @@
 
         /* Typography */
         .title {
-            font-size: clamp(2.2rem, 5.5vw, 3.2rem);
+            font-size: clamp(2.3rem, 5.5vw, 3.4rem);
             font-weight: 900;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.04em;
             line-height: 1.05;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+            color: #1a1a1a;
         }
         .subtitle {
             font-size: 1.05rem;
             font-weight: 500;
-            line-height: 1.6;
-            opacity: 0.85;
-            text-shadow: 0 1px 10px rgba(0,0,0,0.3);
+            line-height: 1.65;
+            color: #666;
         }
 
-        /* Icon */
+        /* Icon boxes */
         .icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 50px; height: 50px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.35);
+            border: 1.5px solid rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(10px);
             transition: all 0.4s ease;
         }
-        .project-glass:hover .icon-box {
-            transform: scale(1.1) rotate(3deg);
-            background: rgba(255, 255, 255, 0.18);
+        .glass-hover:hover .icon-box {
+            transform: scale(1.1) rotate(4deg);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         /* Badges */
@@ -252,54 +236,54 @@
             border-radius: 999px;
             font-size: 10px;
             font-weight: 800;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            background: rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.06);
+            color: #888;
         }
-        .badge-live { color: #86efac; }
-        .badge-game { color: #fcd34d; }
-        .badge-soon { color: rgba(255,255,255,0.4); }
+        .badge-live { color: #059669; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.15); }
+        .badge-game { color: #d97706; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.15); }
+        .badge-soon { color: #aaa; background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.05); }
 
-        /* Link */
+        /* Link row */
         .link-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 18px;
-            margin-top: 18px;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.06);
         }
         .link-text {
             font-family: 'SF Mono', monospace;
-            font-size: 10px;
-            opacity: 0.4;
+            font-size: 10.5px;
+            color: #bbb;
             letter-spacing: -0.01em;
         }
         .link-arrow {
-            opacity: 0.5;
+            color: #bbb;
             transition: all 0.3s ease;
         }
-        .project-glass:hover .link-arrow {
-            transform: translateX(4px);
-            opacity: 0.9;
+        .glass-hover:hover .link-arrow {
+            transform: translateX(5px);
+            color: #888;
         }
 
         /* Footer */
         .footer-glass {
             display: inline-flex;
             align-items: center;
-            gap: 18px;
-            padding: 14px 28px;
+            gap: 20px;
+            padding: 16px 32px;
             border-radius: 999px;
             margin-top: auto;
         }
 
-        /* Reveal */
+        /* Scroll reveal */
         .reveal {
             opacity: 0;
-            transform: translateY(25px);
+            transform: translateY(30px);
             transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .reveal.active {
@@ -309,23 +293,28 @@
 
         /* Responsive */
         @media (max-width: 640px) {
-            .hero-glass { padding: 32px 24px; border-radius: 36px; }
-            .project-glass { padding: 24px; border-radius: 32px; }
+            .hero-glass { padding: 36px 24px; border-radius: 36px; }
+            .project-glass { padding: 28px; border-radius: 36px; }
             .page { padding: 100px 16px 40px; }
-            .glass::after { padding: 6px; }
+            .glass { border-radius: 36px; }
+            .glass::before { padding: 2px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Soft Background Blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
     <!-- Header -->
     <header class="glass header-glass">
-        <div class="glass-shine"></div>
-        <div class="glass-content flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center">
-                <i class="fas fa-cloud text-white/80 text-xs"></i>
+        <div class="flex items-center gap-3 relative z-10">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center shadow-sm">
+                <i class="fas fa-cloud text-[#8d6e63] text-sm"></i>
             </div>
-            <span class="font-bold text-sm tracking-tight text-white/90">Explorer's Hub</span>
+            <span class="font-bold text-sm tracking-tight text-[#4a4a4a]">Explorer's Hub</span>
         </div>
     </header>
 
@@ -334,19 +323,18 @@
 
         <!-- Hero -->
         <div class="glass hero-glass reveal">
-            <div class="glass-shine"></div>
-            <div class="glass-content">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/8 border border-white/10 mb-6 backdrop-blur-sm">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    <span class="text-[11px] font-bold text-white/60 tracking-wide">GITHUB PAGES PORTAL</span>
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/40 border border-black/5 mb-7 backdrop-blur-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-[11px] font-bold text-[#888] tracking-wide">GITHUB PAGES PORTAL</span>
                 </div>
 
                 <h1 class="title mb-5">
                     Adapter to my<br>
-                    <span class="text-emerald-200/90">GitHub sites</span>
+                    <span style="color: #e07a5f;">GitHub sites</span>
                 </h1>
 
-                <p class="subtitle max-w-sm mx-auto">
+                <p class="subtitle max-w-md mx-auto">
                     Уютная страничка со всеми моими проектами.<br>Выбирай, куда хочешь заглянуть.
                 </p>
             </div>
@@ -357,36 +345,34 @@
 
             <!-- AternosUnlimited -->
             <a href="https://exploorer.github.io/aternosunlimited" target="_blank" rel="noopener noreferrer"
-               class="glass project-glass reveal" style="transition-delay: 0.1s;">
-                <div class="glass-shine"></div>
-                <div class="glass-content">
+               class="glass glass-hover project-glass reveal" style="transition-delay: 0.1s;">
+                <div class="relative z-10">
                     <div class="flex items-start justify-between mb-5">
-                        <div class="icon-box text-emerald-200/80">
+                        <div class="icon-box text-[#e07a5f]">
                             <i class="fas fa-bolt"></i>
                         </div>
                         <span class="badge badge-live">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             Live
                         </span>
                     </div>
-                    <h3 class="font-bold text-lg mb-2 tracking-tight">AternosUnlimited</h3>
-                    <p class="text-sm text-white/55 leading-relaxed mb-5 font-medium">
+                    <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">AternosUnlimited</h3>
+                    <p class="text-sm text-[#777] leading-relaxed mb-5 font-medium">
                         Утилита для бесперебойной работы серверов Aternos 24/7.
                     </p>
                     <div class="link-row">
                         <span class="link-text">exploorer.github.io/aternosunlimited</span>
-                        <i class="fas fa-arrow-right text-white/50 link-arrow text-xs"></i>
+                        <i class="fas fa-arrow-right link-arrow text-xs"></i>
                     </div>
                 </div>
             </a>
 
             <!-- EnergoYadro -->
             <a href="https://exploorer.github.io/energoyadro" target="_blank" rel="noopener noreferrer"
-               class="glass project-glass reveal" style="transition-delay: 0.2s;">
-                <div class="glass-shine"></div>
-                <div class="glass-content">
+               class="glass glass-hover project-glass reveal" style="transition-delay: 0.2s;">
+                <div class="relative z-10">
                     <div class="flex items-start justify-between mb-5">
-                        <div class="icon-box text-amber-200/80">
+                        <div class="icon-box text-[#d97706]">
                             <i class="fas fa-atom"></i>
                         </div>
                         <span class="badge badge-game">
@@ -394,34 +380,33 @@
                             Game
                         </span>
                     </div>
-                    <h3 class="font-bold text-lg mb-2 tracking-tight">Енерго Ядро</h3>
-                    <p class="text-sm text-white/55 leading-relaxed mb-5 font-medium">
+                    <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">Енерго Ядро</h3>
+                    <p class="text-sm text-[#777] leading-relaxed mb-5 font-medium">
                         Кликер-игра про энергетическое ядро. Нажимай и улучшай!
                     </p>
                     <div class="link-row">
                         <span class="link-text">exploorer.github.io/energoyadro</span>
-                        <i class="fas fa-arrow-right text-white/50 link-arrow text-xs"></i>
+                        <i class="fas fa-arrow-right link-arrow text-xs"></i>
                     </div>
                 </div>
             </a>
 
             <!-- Coming Soon -->
-            <div class="glass project-glass reveal opacity-50 hover:opacity-100" style="transition-delay: 0.3s;">
-                <div class="glass-shine"></div>
-                <div class="glass-content">
+            <div class="glass project-glass reveal opacity-60 hover:opacity-100" style="transition-delay: 0.3s;">
+                <div class="relative z-10">
                     <div class="flex items-start justify-between mb-5">
-                        <div class="icon-box text-white/30">
+                        <div class="icon-box text-[#bbb]">
                             <i class="fas fa-rocket"></i>
                         </div>
                         <span class="badge badge-soon">Soon</span>
                     </div>
-                    <h3 class="font-bold text-lg mb-2 tracking-tight">Coming Soon</h3>
-                    <p class="text-sm text-white/35 leading-relaxed mb-5 font-medium">
+                    <h3 class="font-bold text-lg mb-2 text-[#2d2d2d] tracking-tight">Coming Soon</h3>
+                    <p class="text-sm text-[#aaa] leading-relaxed mb-5 font-medium">
                         Новый проект в разработке. Скоро здесь будет что-то крутое.
                     </p>
                     <div class="link-row">
                         <span class="link-text">—</span>
-                        <i class="fas fa-lock text-white/25 text-xs"></i>
+                        <i class="fas fa-lock text-[#ccc] text-xs"></i>
                     </div>
                 </div>
             </div>
@@ -431,12 +416,11 @@
         <!-- Quote -->
         <div class="reveal mb-8" style="transition-delay: 0.4s;">
             <div class="glass inline-block px-8 py-5 max-w-lg text-center">
-                <div class="glass-shine"></div>
-                <div class="glass-content">
-                    <p class="text-white/45 italic text-sm font-medium leading-relaxed">
-                        <i class="fas fa-quote-left text-white/15 text-xs mr-2"></i>
+                <div class="relative z-10">
+                    <p class="text-[#aaa] italic text-sm font-medium leading-relaxed">
+                        <i class="fas fa-quote-left text-[#ddd] text-xs mr-2"></i>
                         That's where all my projects ended.
-                        <i class="fas fa-quote-right text-white/15 text-xs ml-2"></i>
+                        <i class="fas fa-quote-right text-[#ddd] text-xs ml-2"></i>
                     </p>
                 </div>
             </div>
@@ -445,20 +429,19 @@
         <!-- Footer -->
         <div class="reveal" style="transition-delay: 0.5s;">
             <footer class="glass footer-glass">
-                <div class="glass-shine"></div>
-                <div class="glass-content flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <div class="w-5 h-5 rounded-md bg-white/12 flex items-center justify-center">
-                            <i class="fas fa-cloud text-white/60 text-[7px]"></i>
+                <div class="relative z-10 flex items-center gap-5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-[#ffd6c2] to-[#c8f6e8] flex items-center justify-center">
+                            <i class="fas fa-cloud text-[#8d6e63] text-[8px]"></i>
                         </div>
-                        <span class="font-bold text-xs text-white/50">Explorer's Hub</span>
+                        <span class="font-bold text-xs text-[#999]">Explorer's Hub</span>
                     </div>
-                    <div class="w-px h-3 bg-white/10"></div>
-                    <a href="https://github.com/exploorer" target="_blank" class="text-white/35 hover:text-white/70 transition-colors text-xs font-bold flex items-center gap-1">
+                    <div class="w-px h-3.5 bg-black/8"></div>
+                    <a href="https://github.com/exploorer" target="_blank" class="text-[#bbb] hover:text-[#666] transition-colors text-xs font-bold flex items-center gap-1.5">
                         <i class="fab fa-github"></i> GitHub
                     </a>
-                    <div class="w-px h-3 bg-white/10"></div>
-                    <span class="text-white/25 text-xs">© 2026</span>
+                    <div class="w-px h-3.5 bg-black/8"></div>
+                    <span class="text-[#ccc] text-xs">© 2026</span>
                 </div>
             </footer>
         </div>
@@ -466,6 +449,7 @@
     </main>
 
     <script>
+        // Scroll reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
