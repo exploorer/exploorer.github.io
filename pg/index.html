@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Генератор паролей</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #fff; color: #111;
+         max-width: 340px; margin: 80px auto; padding: 0 20px; }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  #pwd { width: 100%; font-size: 16px; padding: 10px; border: 1px solid #ddd;
+         border-radius: 8px; outline: none; margin-bottom: 10px; letter-spacing: 0.5px; }
+  #pwd:focus { border-color: #999; }
+  .row { display: flex; justify-content: space-between; align-items: center;
+         margin: 8px 0; font-size: 14px; color: #444; }
+  input[type=range] { width: 100%; margin: 6px 0 10px; accent-color: #111; }
+  button { width: 100%; padding: 10px; margin-top: 8px; border: none; border-radius: 8px;
+           background: #111; color: #fff; font-size: 14px; cursor: pointer; }
+  button:hover { background: #333; }
+</style>
+<base target="_blank">
+</head>
+<body>
+<h1>Генератор паролей</h1>
+<input id="pwd" readonly onclick="copy()">
+<button onclick="generate()">Сгенерировать</button>
+
+<div class="row"><span>Длина: <b id="lenVal">16</b></span></div>
+<input type="range" id="len" min="4" max="64" value="16">
+
+<div class="row"><label>abc</label><input type="checkbox" id="lower" checked></div>
+<div class="row"><label>ABC</label><input type="checkbox" id="upper" checked></div>
+<div class="row"><label>123</label><input type="checkbox" id="digits" checked></div>
+<div class="row"><label>!@#</label><input type="checkbox" id="symbols" checked></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const sets = { lower:'abcdefghijklmnopqrstuvwxyz', upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+               digits:'0123456789', symbols:'!@#$%^&*()-_=+[]{};:,.<>?/~' };
+
+function generate() {
+  let pool = '', pwd = [];
+  for (const k in sets) if ($(k).checked) pool += sets[k];
+  if (!pool) { $('pwd').value = ''; return; }
+  const len = +$('len').value;
+  for (const k in sets) if ($(k).checked) pwd.push(sets[k][Math.floor(Math.random()*sets[k].length)]);
+  while (pwd.length < len) pwd.push(pool[Math.floor(Math.random()*pool.length)]);
+  for (let i = pwd.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1)); [pwd[i],pwd[j]] = [pwd[j],pwd[i]];
+  }
+  $('pwd').value = pwd.slice(0, len).join('');
+}
+
+async function copy() {
+  if (!$('pwd').value) return;
+  try { await navigator.clipboard.writeText($('pwd').value); } catch(e) {}
+}
+
+$('len').oninput = e => { $('lenVal').textContent = e.target.value; generate(); };
+for (const k in sets) $(k).onchange = generate;
+generate();
+</script>
+</body>
+</html>
