@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мессенджер</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+  body { background: #f0f2f5; height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .hidden { display: none !important; }
+
+  /* ==== ЭКРАН ВХОДА / РЕГИСТРАЦИИ ==== */
+  #auth { background: #fff; padding: 32px; border-radius: 14px; width: 340px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+  #auth h1 { font-size: 20px; margin-bottom: 18px; text-align: center; }
+  #auth input { width: 100%; padding: 11px; margin-bottom: 10px; border: 1px solid #ddd;
+                border-radius: 8px; font-size: 14px; outline: none; }
+  #auth input:focus { border-color: #888; }
+  #auth button { width: 100%; padding: 11px; border: none; border-radius: 8px;
+                 background: #111; color: #fff; font-size: 14px; cursor: pointer; }
+  #auth button:hover { background: #333; }
+  #switch { text-align: center; font-size: 13px; margin-top: 14px; color: #666; }
+  #switch a { color: #111; cursor: pointer; font-weight: 600; }
+  #authErr { color: #c0392b; font-size: 13px; margin-top: 8px; text-align: center; }
+
+  /* ==== ЧАТ ==== */
+  #chat { width: 100%; max-width: 600px; height: 100vh; max-height: 800px;
+          background: #fff; display: flex; flex-direction: column; border-radius: 14px;
+          overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+  #chat header { padding: 14px 18px; background: #111; color: #fff;
+                 display: flex; justify-content: space-between; align-items: center; }
+  #chat header b { font-size: 16px; }
+  #me { font-size: 13px; color: #bbb; margin-right: auto; margin-left: 12px; }
+  #logout { background: none; border: 1px solid #555; color: #fff; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 13px; }
+  #messages { flex: 1; overflow-y: auto; padding: 16px; background: #f7f7f7; }
+  .msg { max-width: 75%; margin-bottom: 12px; clear: both; }
+  .msg .bubble { padding: 9px 13px; border-radius: 14px; font-size: 14px;
+                 word-wrap: break-word; line-height: 1.4; }
+  .msg .meta { font-size: 11px; color: #999; margin-top: 3px; }
+  .msg.other .bubble { background: #fff; border: 1px solid #e4e4e4; border-bottom-left-radius: 4px; }
+  .msg.mine { margin-left: auto; text-align: right; }
+  .msg.mine .bubble { background: #111; color: #fff; border-bottom-right-radius: 4px; }
+  .msg.mine .meta { text-align: right; }
+  #inputRow { display: flex; padding: 12px; gap: 8px; border-top: 1px solid #eee; }
+  #msgInput { flex: 1; padding: 11px; border: 1px solid #ddd; border-radius: 20px;
+              font-size: 14px; outline: none; }
+  #send { width: 44px; height: 44px; border: none; border-radius: 50%; background: #111;
+          color: #fff; font-size: 17px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ===== ВХОД / РЕГИСТРАЦИЯ ===== -->
+<div id="auth">
+  <h1 id="authTitle">Вход</h1>
+  <input id="nickname" class="hidden" placeholder="Никнейм" autocomplete="off">
+  <input id="email" type="email" placeholder="Email" autocomplete="off">
+  <input id="password" type="password" placeholder="Пароль (мин. 6 символов)">
+  <button id="authBtn">Войти</button>
+  <div id="switch">Нет аккаунта? <a id="switchLink">Зарегистрироваться</a></div>
+  <div id="authErr"></div>
+</div>
+
+<!-- ===== ЧАТ ===== -->
+<div id="chat" class="hidden">
+  <header>
+    <b>💬 Чат</b>
+    <span id="me"></span>
+    <button id="logout">Выйти</button>
+  </header>
+  <div id="messages"></div>
+  <div id="inputRow">
+    <input id="msgInput" placeholder="Сообщение..." autocomplete="off">
+    <button id="send">➤</button>
+  </div>
+</div>
+
+<!-- Firebase (compat-версии для простоты) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+/* ============================================================
+   ⚠️ ВСТАВЬ СВОИ ДАННЫЕ ИЗ КОНСОЛИ FIREBASE!
+   console.firebase.google.com → твой проект → Настройки проекта
+   → "Ваши приложения" → web-приложение → скопируй config
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyC1FMs5hZOrHcSlwN2ZcptEQvScW-rS4xc",
+  authDomain: "messenger-d025a.firebaseapp.com",
+  projectId: "messenger-d025a",
+  storageBucket: "messenger-d025a.firebasestorage.app",
+  messagingSenderId: "664465051831",
+  appId: "1:664465051831:web:1325a5b6d2e9b0b2cc7d32",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let isRegister = false;
+let unsubscribeMessages = null;
+
+/* ======== ПЕРЕКЛЮЧЕНИЕ ВХОД/РЕГИСТРАЦИЯ ======== */
+$('switchLink').onclick = () => {
+  isRegister = !isRegister;
+  $('authTitle').textContent = isRegister ? 'Регистрация' : 'Вход';
+  $('authBtn').textContent = isRegister ? 'Создать аккаунт' : 'Войти';
+  $('nickname').classList.toggle('hidden', !isRegister);
+  $('switch').innerHTML = isRegister
+    ? 'Уже есть аккаунт? <a id="switchLink">Войти</a>'
+    : 'Нет аккаунта? <a id="switchLink">Зарегистрироваться</a>';
+  $('switchLink').onclick = arguments.callee;
+  $('authErr').textContent = '';
+};
+
+/* ======== КНОПКА ВХОДА/РЕГИСТРАЦИИ ======== */
+$('authBtn').onclick = async () => {
+  const email = $('email').value.trim();
+  const pass = $('password').value;
+  $('authErr').textContent = '';
+  try {
+    if (isRegister) {
+      const nick = $('nickname').value.trim();
+      if (!nick) throw new Error('Введи никнейм');
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      // сохраняем никнейм в базу
+      await db.collection('users').doc(cred.user.uid).set({
+        nickname: nick, created: Date.now()
+      });
+    } else {
+      await auth.signInWithEmailAndPassword(email, pass);
+    }
+  } catch (e) {
+    $('authErr').textContent = friendlyError(e);
+  }
+};
+
+function friendlyError(e) {
+  const m = {
+    'auth/email-already-in-use': 'Этот email уже занят',
+    'auth/invalid-email': 'Неверный email',
+    'auth/weak-password': 'Пароль слишком короткий (мин. 6 символов)',
+    'auth/wrong-password': 'Неверный пароль',
+    'auth/invalid-credential': 'Неверный email или пароль',
+    'auth/user-not-found': 'Пользователь не найден',
+    'auth/too-many-requests': 'Слишком много попыток, подожди'
+  };
+  return m[e.code] || e.message;
+}
+
+/* ======== СОСТОЯНИЕ АВТОРИЗАЦИИ ======== */
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    // получаем никнейм
+    const doc = await db.collection('users').doc(user.uid).get();
+    const nick = doc.exists ? doc.data().nickname : user.email;
+    $('me').textContent = nick;
+    $('auth').classList.add('hidden');
+    $('chat').classList.remove('hidden');
+    listenMessages();
+  } else {
+    $('chat').classList.add('hidden');
+    $('auth').classList.remove('hidden');
+    if (unsubscribeMessages) unsubscribeMessages();
+  }
+});
+
+/* ======== ОТПРАВКА СООБЩЕНИЙ ======== */
+async function send() {
+  const text = $('msgInput').value.trim();
+  if (!text) return;
+  $('msgInput').value = '';
+  await db.collection('messages').add({
+    uid: auth.currentUser.uid,
+    nickname: $('me').textContent,
+    text: text,
+    time: Date.now()
+  });
+}
+$('send').onclick = send;
+$('msgInput').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+/* ======== ПРОСЛУШКА СООБЩЕНИЙ (реалтайм!) ======== */
+function listenMessages() {
+  unsubscribeMessages = db.collection('messages')
+    .orderBy('time', 'asc').limitToLast(100)
+    .onSnapshot(snapshot => {
+      $('messages').innerHTML = '';
+      snapshot.forEach(doc => {
+        const m = doc.data();
+        const div = document.createElement('div');
+        div.className = 'msg ' + (m.uid === auth.currentUser.uid ? 'mine' : 'other');
+        const time = new Date(m.time).toLocaleTimeString('ru', {hour:'2-digit', minute:'2-digit'});
+        div.innerHTML = '<div class="bubble"></div><div class="meta"></div>';
+        div.querySelector('.bubble').textContent = m.text;
+        div.querySelector('.meta').textContent = (m.nickname || '') + ' · ' + time;
+        $('messages').appendChild(div);
+      });
+      $('messages').scrollTop = $('messages').scrollHeight;
+    });
+}
+
+/* ======== ВЫХОД ======== */
+$('logout').onclick = () => auth.signOut();
+
+function $(id) { return document.getElementById(id); }
+</script>
+</body>
+</html>
