@@ -192,16 +192,21 @@ $('authBtn').onclick = async () => {
       if (!first || !username) throw { message: 'Заполни имя и username' };
       if (!/^[a-z0-9_]{3,20}$/.test(username)) throw { message: 'Username: 3-20 символов, a-z 0-9 _' };
 
-      // проверка уникальности username
-      const taken = await db.collection('usernames').doc(username).get();
-      if (taken.exists) throw { message: '@' + username + ' уже занят' };
-
+      // сначала создаём аккаунт (чтобы были права на запись)
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      const batch = db.batch();
-      batch.set(db.collection('users').doc(cred.user.uid),
-        { first, last: last || '', username, email, created: Date.now() });
-      batch.set(db.collection('usernames').doc(username), { uid: cred.user.uid });
-      await batch.commit();
+      try {
+        // проверка уникальности username
+        const taken = await db.collection('usernames').doc(username).get();
+        if (taken.exists) throw { message: '@' + username + ' уже занят' };
+        const batch = db.batch();
+        batch.set(db.collection('users').doc(cred.user.uid),
+          { first, last: last || '', username, email, created: Date.now() });
+        batch.set(db.collection('usernames').doc(username), { uid: cred.user.uid });
+        await batch.commit();
+      } catch (e) {
+        await cred.user.delete(); // откатываем созданный аккаунт
+        throw e;
+      }
     }
   } catch (e) { $('authErr').textContent = friendlyError(e); }
 };
