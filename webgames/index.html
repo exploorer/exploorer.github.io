@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровой портал: На двоих</title>
+    <style>
+        :root {
+            --bg-color: #0f0c29;
+            --bg-grad-1: #302b63;
+            --bg-grad-2: #24243e;
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --text-light: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color), var(--bg-grad-1), var(--bg-grad-2));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            padding: 40px 20px 20px;
+            text-align: center;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 2.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+
+        p.subtitle {
+            margin-top: 8px;
+            color: #a0a0c0;
+            font-size: 1.1em;
+        }
+
+        main {
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px 20px;
+            flex-grow: 1;
+        }
+
+        /* Сетка из 10 игр */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 242, 254, 0.25);
+            border-color: var(--primary);
+        }
+
+        .game-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            line-height: 1;
+        }
+
+        .game-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Диалоговое окно (Модалка с игре) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            width: 95%;
+            max-width: 950px;
+            height: 85vh;
+            background: #161625;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.4);
+        }
+
+        .modal-header {
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: #ff416c;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .modal-close:hover {
+            opacity: 0.85;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #111;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Игровой Портал</h1>
+        <p class="subtitle">10 крутых игр на двоих за одним устройством</p>
+    </header>
+
+    <main>
+        <div class="games-grid">
+            <div class="game-card" onclick="openGameModal('./game1/', 'Крестики-Нолики')">
+                <div class="game-icon">❌⭕</div>
+                <div class="game-title">Крестики-Нолики</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game2/', 'Битва Кликов')">
+                <div class="game-icon">👆👇</div>
+                <div class="game-title">Битва Кликов</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game3/', 'Пинг-Понг')">
+                <div class="game-icon">🏓</div>
+                <div class="game-title">Пинг-Понг</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game4/', '4 в ряд')">
+                <div class="game-icon">🔴🟡</div>
+                <div class="game-title">4 в ряд</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game5/', 'Танчики: Дуэль')">
+                <div class="game-icon">💣</div>
+                <div class="game-title">Танчики: Дуэль</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game6/', 'Камень, Ножницы, Бумага')">
+                <div class="game-icon">✂️</div>
+                <div class="game-title">Камень, Ножницы...</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game7/', 'Змейка X2')">
+                <div class="game-icon">🐍</div>
+                <div class="game-title">Змейка на двоих</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game8/', 'Гонки')">
+                <div class="game-icon">🏎️</div>
+                <div class="game-title">Мини-Гонки</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game9/', 'Шашки')">
+                <div class="game-icon">🏁</div>
+                <div class="game-title">Быстрые Шашки</div>
+            </div>
+
+            <div class="game-card" onclick="openGameModal('./game10/', 'Мемори')">
+                <div class="game-icon">🧠</div>
+                <div class="game-title">Дуэль Памяти</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Диалоговое окно (Модалка) -->
+    <div id="modal" class="modal-overlay" onclick="closeOnOverlay(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="modal-title" class="modal-title">Игра</div>
+                <button class="modal-close" onclick="closeGameModal()">Закрыть ✖</button>
+            </div>
+            <iframe id="game-frame" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const gameFrame = document.getElementById('game-frame');
+
+        function openGameModal(url, title) {
+            modalTitle.innerText = title;
+            gameFrame.src = url;
+            modal.style.display = 'flex';
+        }
+
+        function closeGameModal() {
+            modal.style.display = 'none';
+            gameFrame.src = ''; // Сбрасываем iframe, чтобы останавливать звук и игру
+        }
+
+        // Закрытие по клику на темный фон
+        function closeOnOverlay(event) {
+            if (event.target === modal) {
+                closeGameModal();
+            }
+        }
+
+        // Закрытие по нажатию клавиши ESC
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeGameModal();
+            }
+        });
+    </script>
+</body>
+  </html>
+  
