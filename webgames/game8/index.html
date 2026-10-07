@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мини-Гонки</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            border: 3px solid #00f2fe;
+            border-radius: 10px;
+            background: #111;
+        }
+        .controls { display: flex; gap: 80px; font-size: 1.1em; margin-top: 10px; color: #aaa; }
+    </style>
+</head>
+<body>
+    <h2>Мини-Гонки: Выживание</h2>
+    <canvas id="race" width="600" height="400"></canvas>
+    <div class="controls">
+        <span>Красный: A / D</span>
+        <span>Синий: ← / →</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('race');
+        const ctx = canvas.getContext('2d');
+
+        const car1 = { x: 100, y: 330, w: 30, h: 50, color: '#ff416c', trackLeft: 20, trackRight: 280, alive: true };
+        const car2 = { x: 400, y: 330, w: 30, h: 50, color: '#00b4db', trackLeft: 320, trackRight: 580, alive: true };
+
+        let obstacles = [];
+        let speed = 4;
+        let score = 0;
+
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function spawnObstacle() {
+            // Препятствие для трассы 1
+            obstacles.push({
+                x: car1.trackLeft + Math.random() * (car1.trackRight - car1.trackLeft - 30),
+                y: -50, w: 30, h: 30, speed: speed
+            });
+            // Препятствие для трассы 2
+            obstacles.push({
+                x: car2.trackLeft + Math.random() * (car2.trackRight - car2.trackLeft - 30),
+                y: -50, w: 30, h: 30, speed: speed
+            });
+        }
+
+        setInterval(spawnObstacle, 1200);
+
+        function update() {
+            // Движение машин
+            if (car1.alive) {
+                if (keys['KeyA']) car1.x = Math.max(car1.trackLeft, car1.x - 5);
+                if (keys['KeyD']) car1.x = Math.min(car1.trackRight - car1.w, car1.x + 5);
+            }
+            if (car2.alive) {
+                if (keys['ArrowLeft']) car2.x = Math.max(car2.trackLeft, car2.x - 5);
+                if (keys['ArrowRight']) car2.x = Math.min(car2.trackRight - car2.w, car2.x + 5);
+            }
+
+            // Движение препятствий
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let o = obstacles[i];
+                o.y += o.speed;
+
+                // Столкновение с Машиной 1
+                if (car1.alive && checkCollide(car1, o)) {
+                    car1.alive = false;
+                }
+                // Столкновение с Машиной 2
+                if (car2.alive && checkCollide(car2, o)) {
+                    car2.alive = false;
+                }
+
+                if (o.y > 400) obstacles.splice(i, 1);
+            }
+
+            if (!car1.alive || !car2.alive) {
+                if (!car1.alive && !car2.alive) alert('Оба разбились! Ничья!');
+                else if (!car1.alive) alert('Победил Синий Игрок! 🏆');
+                else if (!car2.alive) alert('Победил Красный Игрок! 🏆');
+                document.location.reload();
+            }
+        }
+
+        function checkCollide(c, o) {
+            return c.x < o.x + o.w && c.x + c.w > o.x &&
+                   c.y < o.y + o.h && c.y + c.h > o.y;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Разделитель трасс
+            ctx.strokeStyle = '#00f2fe';
+            ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(300, 0); ctx.lineTo(300, 400); ctx.stroke();
+
+            // Машинки
+            if (car1.alive) { ctx.fillStyle = car1.color; ctx.fillRect(car1.x, car1.y, car1.w, car1.h); }
+            if (car2.alive) { ctx.fillStyle = car2.color; ctx.fillRect(car2.x, car2.y, car2.w, car2.h); }
+
+            // Препятствия
+            ctx.fillStyle = '#ff2e63';
+            obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
