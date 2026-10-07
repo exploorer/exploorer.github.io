@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Танчики: Дуэль</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            border: 3px solid #00f2fe;
+            border-radius: 10px;
+            background: #111;
+        }
+        .hp-bar {
+            display: flex;
+            gap: 100px;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Танчики: Дуэль</h2>
+    <div class="hp-bar">
+        <span style="color:#ff416c">Игрок 1 (WASD + Space): HP <b id="hp1">5</b></span>
+        <span style="color:#00b4db">Игрок 2 (Стрелки + Enter): HP <b id="hp2">5</b></span>
+    </div>
+    <canvas id="game" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+
+        const t1 = { x: 50, y: 200, color: '#ff416c', hp: 5, angle: 0 };
+        const t2 = { x: 550, y: 200, color: '#00b4db', hp: 5, angle: Math.PI };
+        const bullets = [];
+        const keys = {};
+
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            if (e.code === 'Space') fire(t1);
+            if (e.code === 'Enter') fire(t2);
+        });
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function fire(t) {
+            bullets.push({
+                x: t.x + Math.cos(t.angle)*20,
+                y: t.y + Math.sin(t.angle)*20,
+                vx: Math.cos(t.angle)*6,
+                vy: Math.sin(t.angle)*6,
+                owner: t
+            });
+        }
+
+        function update() {
+            // Танк 1
+            if (keys['KeyA']) t1.angle -= 0.05;
+            if (keys['KeyD']) t1.angle += 0.05;
+            if (keys['KeyW']) { t1.x += Math.cos(t1.angle)*2; t1.y += Math.sin(t1.angle)*2; }
+            if (keys['KeyS']) { t1.x -= Math.cos(t1.angle)*2; t1.y -= Math.sin(t1.angle)*2; }
+
+            // Танк 2
+            if (keys['ArrowLeft']) t2.angle -= 0.05;
+            if (keys['ArrowRight']) t2.angle += 0.05;
+            if (keys['ArrowUp']) { t2.x += Math.cos(t2.angle)*2; t2.y += Math.sin(t2.angle)*2; }
+            if (keys['ArrowDown']) { t2.x -= Math.cos(t2.angle)*2; t2.y -= Math.sin(t2.angle)*2; }
+
+            // Обновление снарядов
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.x += b.vx; b.y += b.vy;
+
+                // Попадание в танки
+                if (b.owner !== t1 && Math.hypot(b.x - t1.x, b.y - t1.y) < 15) {
+                    t1.hp--; bullets.splice(i, 1); continue;
+                }
+                if (b.owner !== t2 && Math.hypot(b.x - t2.x, b.y - t2.y) < 15) {
+                    t2.hp--; bullets.splice(i, 1); continue;
+                }
+
+                // Вылет за экран
+                if (b.x < 0 || b.x > 600 || b.y < 0 || b.y > 400) bullets.splice(i, 1);
+            }
+
+            document.getElementById('hp1').innerText = t1.hp;
+            document.getElementById('hp2').innerText = t2.hp;
+
+            if (t1.hp <= 0) { alert('Победил Синий Игрок! 🏆'); reset(); }
+            if (t2.hp <= 0) { alert('Победил Красный Игрок! 🏆'); reset(); }
+        }
+
+        function reset() {
+            t1.x = 50; t1.y = 200; t1.hp = 5; t1.angle = 0;
+            t2.x = 550; t2.y = 200; t2.hp = 5; t2.angle = Math.PI;
+            bullets.length = 0;
+        }
+
+        function drawTank(t) {
+            ctx.save();
+            ctx.translate(t.x, t.y);
+            ctx.rotate(t.angle);
+            ctx.fillStyle = t.color;
+            ctx.fillRect(-12, -12, 24, 24);
+            ctx.fillRect(0, -3, 20, 6); // Дуло
+            ctx.restore();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTank(t1);
+            drawTank(t2);
+
+            ctx.fillStyle = '#fff';
+            bullets.forEach(b => {
+                ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, Math.PI*2); ctx.fill();
+            });
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
