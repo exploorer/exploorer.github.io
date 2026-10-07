@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Крестики-Нолики</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h2 { font-size: 2em; margin-bottom: 10px; }
+        .status { font-size: 1.2em; margin-bottom: 20px; color: #00f2fe; }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+        }
+        .cell {
+            background: #16213e;
+            border: 2px solid #00f2fe;
+            border-radius: 12px;
+            font-size: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cell:hover { background: #0f3460; }
+        .cell.x { color: #ff416c; }
+        .cell.o { color: #00f2fe; }
+        button {
+            margin-top: 25px;
+            padding: 10px 25px;
+            font-size: 1em;
+            background: #00f2fe;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Крестики-Нолики</h2>
+    <div class="status" id="status">Ход: ❌</div>
+    <div class="board" id="board"></div>
+    <button onclick="resetGame()">Заново</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        let turn = '❌';
+        let state = Array(9).fill('');
+        let active = true;
+
+        const wins = [
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
+        ];
+
+        function init() {
+            board.innerHTML = '';
+            state.fill('');
+            active = true;
+            turn = '❌';
+            status.innerText = 'Ход: ❌';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onclick = () => makeMove(i, cell);
+                board.appendChild(cell);
+            }
+        }
+
+        function makeMove(i, cell) {
+            if (state[i] !== '' || !active) return;
+            state[i] = turn;
+            cell.innerText = turn;
+            cell.classList.add(turn === '❌' ? 'x' : 'o');
+            
+            if (checkWin()) {
+                status.innerText = `Победил ${turn}! 🎉`;
+                active = false;
+            } else if (!state.includes('')) {
+                status.innerText = 'Ничья! 🤝';
+                active = false;
+            } else {
+                turn = turn === '❌' ? '⭕' : '❌';
+                status.innerText = `Ход: ${turn}`;
+            }
+        }
+
+        function checkWin() {
+            return wins.some(c => state[c[0]] && state[c[0]] === state[c[1]] && state[c[0]] === state[c[2]]);
+        }
+
+        function resetGame() { init(); }
+        init();
+    </script>
+</body>
+</html>
