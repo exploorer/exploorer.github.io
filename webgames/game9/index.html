@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Быстрые Шашки</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+        .status { font-size: 1.3em; margin-bottom: 15px; color: #00f2fe; }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 45px);
+            grid-template-rows: repeat(8, 45px);
+            border: 3px solid #00f2fe;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .cell {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dark { background: #16213e; }
+        .light { background: #0f3460; }
+        .piece {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        }
+        .red-piece { background: #ff416c; border: 2px solid #fff; }
+        .blue-piece { background: #00b4db; border: 2px solid #fff; }
+        .selected { outline: 3px solid #f7b731; }
+        .valid-move { background: #20bf6b !important; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Быстрые Шашки</h2>
+    <div class="status" id="status">Ход: 🔴 Красные</div>
+    <div class="board" id="board"></div>
+
+    <script>
+        const boardEl = document.getElementById('board');
+        const statusEl = document.getElementById('status');
+        let turn = 'red';
+        let selectedCell = null;
+        let board = Array(8).fill(null).map(() => Array(8).fill(null));
+
+        function init() {
+            boardEl.innerHTML = '';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if ((r + c) % 2 === 1) {
+                        if (r < 3) board[r][c] = 'blue';
+                        else if (r > 4) board[r][c] = 'red';
+                    }
+                }
+            }
+            render();
+        }
+
+        function render() {
+            boardEl.innerHTML = '';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${(r + c) % 2 === 1 ? 'dark' : 'light'}`;
+                    
+                    if (board[r][c]) {
+                        const piece = document.createElement('div');
+                        piece.className = `piece ${board[r][c] === 'red' ? 'red-piece' : 'blue-piece'}`;
+                        if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+                            piece.classList.add('selected');
+                        }
+                        piece.onclick = () => selectPiece(r, c);
+                        cell.appendChild(piece);
+                    } else if (selectedCell && isValidMove(selectedCell.r, selectedCell.c, r, c)) {
+                        cell.classList.add('valid-move');
+                        cell.onclick = () => makeMove(selectedCell.r, selectedCell.c, r, c);
+                    }
+
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function selectPiece(r, c) {
+            if (board[r][c] === turn) {
+                selectedCell = { r, c };
+                render();
+            }
+        }
+
+        function isValidMove(fr, fc, tr, tc) {
+            const dir = turn === 'red' ? -1 : 1;
+            // Обычный ход
+            if (tr === fr + dir && Math.abs(tc - fc) === 1 && !board[tr][tc]) return true;
+            // Взятие
+            if (tr === fr + 2 * dir && Math.abs(tc - fc) === 2 && !board[tr][tc]) {
+                const mr = fr + dir, mc = fc + (tc - fc) / 2;
+                if (board[mr][mc] && board[mr][mc] !== turn) return true;
+            }
+            return false;
+        }
+
+        function makeMove(fr, fc, tr, tc) {
+            board[tr][tc] = turn;
+            board[fr][fc] = null;
+
+            // Если было взятие — удаляем срубленную шашку
+            if (Math.abs(tr - fr) === 2) {
+                const mr = fr + (tr - fr) / 2, mc = fc + (tc - fc) / 2;
+                board[mr][mc] = null;
+            }
+
+            selectedCell = null;
+            turn = turn === 'red' ? 'blue' : 'red';
+            statusEl.innerText = `Ход: ${turn === 'red' ? '🔴 Красные' : '🔵 Синие'}`;
+            render();
+        }
+
+        init();
+    </script>
+</body>
+</html>
