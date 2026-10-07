@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Дуэль Памяти</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+        .header { display: flex; gap: 60px; font-size: 1.3em; margin-bottom: 15px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 12px;
+        }
+        .card {
+            width: 80px;
+            height: 80px;
+            background: #16213e;
+            border: 2px solid #00f2fe;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card.flipped { background: #0f3460; }
+        .status { margin-top: 15px; font-size: 1.2em; color: #f7b731; }
+    </style>
+</head>
+<body>
+    <h2>Дуэль Памяти</h2>
+    <div class="header">
+        <span style="color:#ff416c">Игрок 1: <b id="s1">0</b></span>
+        <span style="color:#00b4db">Игрок 2: <b id="s2">0</b></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="status" id="status">Ход Игрока 1</div>
+
+    <script>
+        const emojis = ['🚀', '🎮', '🍕', '🐱', '🍩', '👻', '🏆', '💎'];
+        let cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+
+        let turn = 1;
+        let score1 = 0, score2 = 0;
+        let flipped = [];
+        let lock = false;
+
+        const gridEl = document.getElementById('grid');
+
+        cards.forEach((emoji, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.emoji = emoji;
+            card.dataset.index = index;
+            card.onclick = () => flipCard(card);
+            gridEl.appendChild(card);
+        });
+
+        function flipCard(card) {
+            if (lock || card.classList.contains('flipped') || flipped.includes(card)) return;
+
+            card.innerText = card.dataset.emoji;
+            card.classList.add('flipped');
+            flipped.push(card);
+
+            if (flipped.length === 2) {
+                lock = true;
+                const [c1, c2] = flipped;
+
+                if (c1.dataset.emoji === c2.dataset.emoji) {
+                    if (turn === 1) score1++; else score2++;
+                    document.getElementById('s1').innerText = score1;
+                    document.getElementById('s2').innerText = score2;
+                    flipped = [];
+                    lock = false;
+                    checkWin();
+                } else {
+                    setTimeout(() => {
+                        c1.innerText = '';
+                        c2.innerText = '';
+                        c1.classList.remove('flipped');
+                        c2.classList.remove('flipped');
+                        flipped = [];
+                        turn = turn === 1 ? 2 : 1;
+                        document.getElementById('status').innerText = `Ход Игрока ${turn}`;
+                        lock = false;
+                    }, 1000);
+                }
+            }
+        }
+
+        function checkWin() {
+            if (score1 + score2 === emojis.length) {
+                let winner = score1 > score2 ? 'Победил Игрок 1! 🏆' : (score2 > score1 ? 'Победил Игрок 2! 🏆' : 'Ничья! 🤝');
+                document.getElementById('status').innerText = winner;
+            }
+        }
+    </script>
+</body>
+</html>
