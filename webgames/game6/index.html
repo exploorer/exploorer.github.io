@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Камень, Ножницы, Бумага</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+        h2 { font-size: 2em; margin-bottom: 10px; color: #00f2fe; }
+        .score-board { display: flex; gap: 80px; font-size: 1.5em; margin-bottom: 20px; }
+        .arena {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+            max-width: 600px;
+            background: #16213e;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #00f2fe;
+        }
+        .player-card { text-align: center; }
+        .choice-icon { font-size: 4em; margin: 15px 0; min-height: 80px; }
+        .status { font-size: 1.3em; margin: 20px 0; color: #f7b731; font-weight: bold; }
+        .controls-hint { font-size: 0.9em; color: #aaa; background: #0f3460; padding: 10px 15px; border-radius: 10px; }
+        button {
+            padding: 10px 25px;
+            font-size: 1.1em;
+            background: #00f2fe;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Камень, Ножницы, Бумага</h2>
+    
+    <div class="score-board">
+        <span style="color:#ff416c">Игрок 1: <b id="s1">0</b></span>
+        <span style="color:#00b4db">Игрок 2: <b id="s2">0</b></span>
+    </div>
+
+    <div class="arena">
+        <div class="player-card">
+            <h3 style="color:#ff416c">Игрок 1</h3>
+            <div class="choice-icon" id="icon1">❓</div>
+            <div class="controls-hint"><b>A</b>: ✊ | <b>S</b>: ✂️ | <b>D</b>: 📄</div>
+        </div>
+        <div class="player-card">
+            <h3 style="color:#00b4db">Игрок 2</h3>
+            <div class="choice-icon" id="icon2">❓</div>
+            <div class="controls-hint"><b>J</b>: ✊ | <b>K</b>: ✂️ | <b>L</b>: 📄</div>
+        </div>
+    </div>
+
+    <div class="status" id="status">Оба игрока: сделайте скрытый выбор!</div>
+    <button onclick="resetRound()">Следующий раунд</button>
+
+    <script>
+        let p1Choice = null, p2Choice = null;
+        let score1 = 0, score2 = 0;
+
+        const moves = {
+            'a': 'rock', 's': 'scissors', 'd': 'paper',
+            'j': 'rock', 'k': 'scissors', 'l': 'paper'
+        };
+
+        const icons = { 'rock': '✊', 'scissors': '✂️', 'paper': '📄' };
+
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            if (['a', 's', 'd'].includes(key) && !p1Choice) {
+                p1Choice = moves[key];
+                document.getElementById('icon1').innerText = '🔒';
+                checkResult();
+            }
+            if (['j', 'k', 'l'].includes(key) && !p2Choice) {
+                p2Choice = moves[key];
+                document.getElementById('icon2').innerText = '🔒';
+                checkResult();
+            }
+        });
+
+        function checkResult() {
+            const status = document.getElementById('status');
+            if (!p1Choice && p2Choice) status.innerText = 'Игрок 2 готов! Ждем Игрока 1...';
+            else if (p1Choice && !p2Choice) status.innerText = 'Игрок 1 готов! Ждем Игрока 2...';
+            else if (p1Choice && p2Choice) {
+                document.getElementById('icon1').innerText = icons[p1Choice];
+                document.getElementById('icon2').innerText = icons[p2Choice];
+
+                if (p1Choice === p2Choice) {
+                    status.innerText = 'Ничья! 🤝';
+                } else if (
+                    (p1Choice === 'rock' && p2Choice === 'scissors') ||
+                    (p1Choice === 'scissors' && p2Choice === 'paper') ||
+                    (p1Choice === 'paper' && p2Choice === 'rock')
+                ) {
+                    status.innerText = 'Раунд за Игроком 1! 🎉';
+                    document.getElementById('s1').innerText = ++score1;
+                } else {
+                    status.innerText = 'Раунд за Игроком 2! 🎉';
+                    document.getElementById('s2').innerText = ++score2;
+                }
+            }
+        }
+
+        function resetRound() {
+            p1Choice = null; p2Choice = null;
+            document.getElementById('icon1').innerText = '❓';
+            document.getElementById('icon2').innerText = '❓';
+            document.getElementById('status').innerText = 'Оба игрока: сделайте скрытый выбор!';
+        }
+    </script>
+</body>
+  </html>
+  
