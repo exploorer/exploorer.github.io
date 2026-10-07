@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>4 в ряд</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .status { font-size: 1.3em; margin-bottom: 15px; color: #00f2fe; }
+        .board {
+            background: #0f3460;
+            padding: 10px;
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            gap: 8px;
+        }
+        .slot {
+            width: 50px;
+            height: 50px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .red { background: #ff416c; }
+        .yellow { background: #f7b731; }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #00f2fe;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>4 в ряд</h2>
+    <div class="status" id="status">Ход: 🔴 Красные</div>
+    <div class="board" id="board"></div>
+    <button onclick="resetGame()">Заново</button>
+
+    <script>
+        const ROWS = 6, COLS = 7;
+        let grid = [], turn = 'red', active = true;
+
+        function init() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            grid = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+            active = true;
+            turn = 'red';
+            document.getElementById('status').innerText = 'Ход: 🔴 Красные';
+
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.id = `s-${r}-${c}`;
+                    slot.onclick = () => dropToken(c);
+                    board.appendChild(slot);
+                }
+            }
+        }
+
+        function dropToken(col) {
+            if (!active) return;
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (!grid[r][col]) {
+                    grid[r][col] = turn;
+                    document.getElementById(`s-${r}-${col}`).classList.add(turn);
+                    if (checkWin(r, col)) {
+                        document.getElementById('status').innerText = `Победили ${turn === 'red' ? '🔴 Красные' : '🟡 Желтые'}! 🎉`;
+                        active = false;
+                    } else {
+                        turn = turn === 'red' ? 'yellow' : 'red';
+                        document.getElementById('status').innerText = `Ход: ${turn === 'red' ? '🔴 Красные' : '🟡 Желтые'}`;
+                    }
+                    break;
+                }
+            }
+        }
+
+        function checkWin(r, c) {
+            const color = grid[r][c];
+            function count(dx, dy) {
+                let cnt = 0, i = r + dx, j = c + dy;
+                while (i >= 0 && i < ROWS && j >= 0 && j < COLS && grid[i][j] === color) {
+                    cnt++; i += dx; j += dy;
+                }
+                return cnt;
+            }
+            return (count(1,0)+count(-1,0)>=3) || (count(0,1)+count(0,-1)>=3) ||
+                   (count(1,1)+count(-1,-1)>=3) || (count(1,-1)+count(-1,1)>=3);
+        }
+
+        function resetGame() { init(); }
+        init();
+    </script>
+</body>
+</html>
