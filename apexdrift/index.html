@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="green" data-mode="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Drift — Скачать игру на телефон</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0" rel="stylesheet" />
+
+  <style>
+    /* =========================================================
+       MATERIAL YOU (M3) DYNAMIC TOKENS
+       По умолчанию: зелёная тема (green) + светлый стиль (light)
+    ========================================================= */
+    :root {
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-pill: 9999px;
+      --transition-ui: 0.35s cubic-bezier(0.2, 0, 0, 1);
+      --font-display: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    /* --- THEME: GREEN (ПО УМОЛЧАНИЮ) --- */
+    [data-theme="green"][data-mode="light"] {
+      --md-primary: #1c6b30;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #a5f4aa;
+      --md-on-primary-container: #002108;
+      --md-secondary: #516350;
+      --md-secondary-container: #d4e8d0;
+      --md-on-secondary-container: #0f1f10;
+      --md-surface: #f6fbf3;
+      --md-surface-container-low: #eff6ec;
+      --md-surface-container: #e8f0e4;
+      --md-surface-container-high: #dde7da;
+      --md-on-surface: #171d16;
+      --md-on-surface-variant: #41493f;
+      --bg-blob-1: #b8f397;
+      --bg-blob-2: #bdeaf3;
+      --bg-blob-3: #e3f2d5;
+      --bg-base: #eef5ea;
+    }
+
+    [data-theme="green"][data-mode="dark"] {
+      --md-primary: #8ad88f;
+      --md-on-primary: #003911;
+      --md-primary-container: #00531c;
+      --md-on-primary-container: #a5f4aa;
+      --md-secondary: #b8ccb5;
+      --md-secondary-container: #394b39;
+      --md-on-secondary-container: #d4e8d0;
+      --md-surface: #10150f;
+      --md-surface-container-low: #171d16;
+      --md-surface-container: #1d241c;
+      --md-surface-container-high: #272f25;
+      --md-on-surface: #e0e4dc;
+      --md-on-surface-variant: #c1c9bd;
+      --bg-blob-1: #163d1e;
+      --bg-blob-2: #16373f;
+      --bg-blob-3: #222e1d;
+      --bg-base: #0d120c;
+    }
+
+    /* --- THEME: PURPLE (Как на референсе) --- */
+    [data-theme="purple"][data-mode="light"] {
+      --md-primary: #7c408c;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #fad7ff;
+      --md-on-primary-container: #300040;
+      --md-secondary: #68596b;
+      --md-secondary-container: #f0dcf1;
+      --md-on-secondary-container: #231726;
+      --md-surface: #fef7ff;
+      --md-surface-container-low: #f9effb;
+      --md-surface-container: #f3e7f6;
+      --md-surface-container-high: #ecdeef;
+      --md-on-surface: #1e1a1f;
+      --md-on-surface-variant: #4c444d;
+      --bg-blob-1: #efc5fa;
+      --bg-blob-2: #ffd8c7;
+      --bg-blob-3: #d2dbf7;
+      --bg-base: #f4ecf7;
+    }
+
+    [data-theme="purple"][data-mode="dark"] {
+      --md-primary: #e8b3f7;
+      --md-on-primary: #490d5a;
+      --md-primary-container: #622872;
+      --md-on-primary-container: #fad7ff;
+      --md-secondary: #d3c0d5;
+      --md-secondary-container: #504152;
+      --md-on-secondary-container: #f0dcf1;
+      --md-surface: #161217;
+      --md-surface-container-low: #1e1a1f;
+      --md-surface-container: #241f26;
+      --md-surface-container-high: #2f2931;
+      --md-on-surface: #e8e0e8;
+      --md-on-surface-variant: #cec3cf;
+      --bg-blob-1: #451e52;
+      --bg-blob-2: #3b263d;
+      --bg-blob-3: #242b47;
+      --bg-base: #120e13;
+    }
+
+    /* --- THEME: BLUE --- */
+    [data-theme="blue"][data-mode="light"] {
+      --md-primary: #1a5fc7;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #d8e2ff;
+      --md-on-primary-container: #001a42;
+      --md-secondary: #565e71;
+      --md-secondary-container: #dae2f9;
+      --md-on-secondary-container: #131c2b;
+      --md-surface: #f8f9ff;
+      --md-surface-container-low: #f1f4fc;
+      --md-surface-container: #eaeef8;
+      --md-surface-container-high: #e2e7f3;
+      --md-on-surface: #191c22;
+      --md-on-surface-variant: #44474f;
+      --bg-blob-1: #c2d7ff;
+      --bg-blob-2: #d3eefd;
+      --bg-blob-3: #e8d8ff;
+      --bg-base: #edf2fb;
+    }
+
+    [data-theme="blue"][data-mode="dark"] {
+      --md-primary: #aec6ff;
+      --md-on-primary: #002e6b;
+      --md-primary-container: #004497;
+      --md-on-primary-container: #d8e2ff;
+      --md-secondary: #bec6dc;
+      --md-secondary-container: #3e4759;
+      --md-on-secondary-container: #dae2f9;
+      --md-surface: #111319;
+      --md-surface-container-low: #191c22;
+      --md-surface-container: #1f222a;
+      --md-surface-container-high: #292d36;
+      --md-on-surface: #e2e2eb;
+      --md-on-surface-variant: #c4c6d0;
+      --bg-blob-1: #163363;
+      --bg-blob-2: #1c3a4f;
+      --bg-blob-3: #2f2042;
+      --bg-base: #0d1016;
+    }
+
+    /* --- THEME: ORANGE --- */
+    [data-theme="orange"][data-mode="light"] {
+      --md-primary: #9c4400;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #ffdbc7;
+      --md-on-primary-container: #331100;
+      --md-secondary: #765848;
+      --md-secondary-container: #ffdbc7;
+      --md-on-secondary-container: #2b160a;
+      --md-surface: #fff8f5;
+      --md-surface-container-low: #fdf1eb;
+      --md-surface-container: #f7eae4;
+      --md-surface-container-high: #efe1da;
+      --md-on-surface: #221a15;
+      --md-on-surface-variant: #52443c;
+      --bg-blob-1: #ffd4b8;
+      --bg-blob-2: #ffe8a3;
+      --bg-blob-3: #fad6d6;
+      --bg-base: #faf0ea;
+    }
+
+    [data-theme="orange"][data-mode="dark"] {
+      --md-primary: #ffb68a;
+      --md-on-primary: #542100;
+      --md-primary-container: #773200;
+      --md-on-primary-container: #ffdbc7;
+      --md-secondary: #e6bea8;
+      --md-secondary-container: #5c4032;
+      --md-on-secondary-container: #ffdbc7;
+      --md-surface: #19120e;
+      --md-surface-container-low: #221a15;
+      --md-surface-container: #28201b;
+      --md-surface-container-high: #332a24;
+      --md-on-surface: #efe0d8;
+      --md-on-surface-variant: #d6c3b9;
+      --bg-blob-1: #4d260b;
+      --bg-blob-2: #4a3a10;
+      --bg-blob-3: #3d2122;
+      --bg-base: #140e0b;
+    }
+
+    /* --- THEME: ROSE --- */
+    [data-theme="rose"][data-mode="light"] {
+      --md-primary: #a93259;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #ffd9e2;
+      --md-on-primary-container: #3e0019;
+      --md-secondary: #74565f;
+      --md-secondary-container: #ffd9e2;
+      --md-on-secondary-container: #2b151c;
+      --md-surface: #fff8f8;
+      --md-surface-container-low: #fcf0f2;
+      --md-surface-container: #f6e9ec;
+      --md-surface-container-high: #efe1e4;
+      --md-on-surface: #22191c;
+      --md-on-surface-variant: #514347;
+      --bg-blob-1: #ffc8d7;
+      --bg-blob-2: #ffe0c7;
+      --bg-blob-3: #e8d4fa;
+      --bg-base: #f9eef1;
+    }
+
+    [data-theme="rose"][data-mode="dark"] {
+      --md-primary: #ffb1c7;
+      --md-on-primary: #65002c;
+      --md-primary-container: #8a1742;
+      --md-on-primary-container: #ffd9e2;
+      --md-secondary: #e3bdc6;
+      --md-secondary-container: #5b3f47;
+      --md-on-secondary-container: #ffd9e2;
+      --md-surface: #191113;
+      --md-surface-container-low: #22191c;
+      --md-surface-container: #281f22;
+      --md-surface-container-high: #33292c;
+      --md-on-surface: #efe0e2;
+      --md-on-surface-variant: #d6c2c6;
+      --bg-blob-1: #54172f;
+      --bg-blob-2: #4a2d1b;
+      --bg-blob-3: #362147;
+      --bg-base: #140d0f;
+    }
+
+    /* =========================================================
+       BASE & WALLPAPER BACKDROP
+    ========================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-base);
+      color: var(--md-on-surface);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color var(--transition-ui), color var(--transition-ui);
+      position: relative;
+      line-height: 1.55;
+    }
+
+    .wallpaper {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .wallpaper-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(95px);
+      opacity: 0.78;
+      transition: background-color 0.7s ease;
+    }
+
+    .blob-1 {
+      width: 560px;
+      height: 560px;
+      background: var(--bg-blob-1);
+      top: -120px;
+      left: -100px;
+    }
+
+    .blob-2 {
+      width: 520px;
+      height: 520px;
+      background: var(--bg-blob-2);
+      top: 20%;
+      right: -140px;
+    }
+
+    .blob-3 {
+      width: 480px;
+      height: 480px;
+      background: var(--bg-blob-3);
+      bottom: -140px;
+      left: 25%;
+    }
+
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      user-select: none;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 18px 60px;
+    }
+
+    /* =========================================================
+       TOP BAR / THEME & DARK MODE SWITCHER
+    ========================================================= */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: var(--md-surface-container-low);
+      border-radius: var(--radius-pill);
+      padding: 10px 14px 10px 18px;
+      margin-bottom: 26px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      transition: background-color var(--transition-ui);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--md-on-surface);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      display: grid;
+      place-items: center;
+      transition: background-color var(--transition-ui), color var(--transition-ui), transform 0.2s;
+    }
+
+    .brand:hover .brand-icon {
+      transform: rotate(-8deg) scale(1.05);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+    }
+
+    .theme-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .palette-picker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--md-surface-container);
+      padding: 5px 8px;
+      border-radius: var(--radius-pill);
+    }
+
+    .swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .swatch:hover {
+      transform: scale(1.12);
+    }
+
+    .swatch.active {
+      border-color: var(--md-on-surface);
+      transform: scale(1.1);
+    }
+
+    .swatch.active::after {
+      content: "✓";
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .swatch[data-color="green"] { background: #2e8b44; }
+    .swatch[data-color="purple"] { background: #8c4b9e; }
+    .swatch[data-color="blue"] { background: #266cd9; }
+    .swatch[data-color="orange"] { background: #c4580c; }
+    .swatch[data-color="rose"] { background: #c73c6a; }
+
+    .mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border: none;
+      border-radius: var(--radius-pill);
+      padding: 8px 16px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background-color var(--transition-ui), color var(--transition-ui);
+    }
+
+    .mode-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       HERO BENTO GRID
+    ========================================================= */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.95fr;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .widget-card {
+      background: var(--md-surface-container-low);
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      transition: background-color var(--transition-ui);
+    }
+
+    .hero-main {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .hero-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.3rem, 5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin: 14px 0 14px;
+    }
+
+    .hero-title span {
+      color: var(--md-primary);
+    }
+
+    .hero-desc {
+      font-size: 1.06rem;
+      color: var(--md-on-surface-variant);
+      max-width: 520px;
+    }
+
+    .download-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      text-decoration: none;
+      padding: 16px 28px;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
+      font-size: 1.05rem;
+      transition: transform 0.2s, box-shadow 0.2s, background-color var(--transition-ui);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+      text-decoration: none;
+      padding: 16px 22px;
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: background-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+    }
+
+    /* =========================================================
+       RIGHT WIDGETS STACK (Стиль виджетов с картинки)
+    ========================================================= */
+    .widgets-stack {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .widgets-stack {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Органический виджет как погода 65° с картинки */
+    .blob-widget {
+      background: var(--md-surface-container-low);
+      border-radius: 44% 56% 52% 48% / 48% 44% 56% 52%;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 190px;
+      transition: background-color var(--transition-ui), transform 0.3s ease;
+    }
+
+    .blob-widget:hover {
+      transform: scale(1.03);
+    }
+
+    .big-stat {
+      font-family: var(--font-display);
+      font-size: 3.1rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--md-primary);
+    }
+
+    .stat-unit {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--md-primary);
+    }
+
+    .stat-label {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--md-on-surface-variant);
+    }
+
+    /* Круглый виджет как часы 12-3-6-9 с картинки */
+    .dial-widget {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-radius: 50%;
+      aspect-ratio: 1 / 1;
+      max-width: 205px;
+      width: 100%;
+      justify-self: center;
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 18px;
+      text-align: center;
+      transition: background-color var(--transition-ui), transform 0.3s ease;
+    }
+
+    .dial-widget:hover {
+      transform: rotate(4deg) scale(1.03);
+    }
+
+    .dial-marks {
+      position: absolute;
+      inset: 10px;
+      pointer-events: none;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 0.8rem;
+      opacity: 0.45;
+    }
+
+    .dial-marks span { position: absolute; }
+    .dial-marks .m-top { top: 2px; left: 50%; transform: translateX(-50%); }
+    .dial-marks .m-right { right: 5px; top: 50%; transform: translateY(-50%); }
+    .dial-marks .m-bottom { bottom: 2px; left: 50%; transform: translateX(-50%); }
+    .dial-marks .m-left { left: 5px; top: 50%; transform: translateY(-50%); }
+
+    /* Пилюльный виджет как Drive с картинки */
+    .apk-pill-widget {
+      grid-column: 1 / -1;
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      border-radius: var(--radius-pill);
+      padding: 12px 14px 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      transition: transform 0.2s, background-color var(--transition-ui);
+    }
+
+    .apk-pill-widget:hover {
+      transform: translateY(-2px);
+    }
+
+    .apk-pill-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .apk-pill-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .apk-pill-sub {
+      font-size: 0.78rem;
+      opacity: 0.88;
+    }
+
+    .apk-pill-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    /* Виджет-дуо как Home / Work с картинки */
+    .specs-duo-widget {
+      grid-column: 1 / -1;
+      background: var(--md-surface-container);
+      border-radius: var(--radius-xl);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .spec-tile {
+      background: var(--md-surface-container-low);
+      border-radius: var(--radius-lg);
+      padding: 16px 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: background-color var(--transition-ui);
+    }
+
+    .spec-tile .material-symbols-rounded {
+      color: var(--md-primary);
+      font-size: 26px;
+    }
+
+    .spec-tile strong {
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .spec-tile span {
+      font-size: 0.78rem;
+      color: var(--md-on-surface-variant);
+    }
+
+    /* =========================================================
+       ЧТО ЕСТЬ В ИГРЕ (Стиль виджета Inbox + карточки)
+    ========================================================= */
+    .section-header {
+      margin: 34px 0 18px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      color: var(--md-on-surface-variant);
+      margin-top: 4px;
+      font-size: 0.98rem;
+    }
+
+    .info-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 860px) {
+      .info-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Карточка в стиле Inbox с картинки */
+    .inbox-widget {
+      background: var(--md-surface-container-low);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      transition: background-color var(--transition-ui);
+    }
+
+    @media (max-width: 540px) {
+      .inbox-widget {
+        flex-direction: column;
+      }
+    }
+
+    .inbox-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .inbox-head {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .inbox-row {
+      background: var(--md-surface-container);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      transition: background-color var(--transition-ui);
+    }
+
+    .inbox-row h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .inbox-row p {
+      font-size: 0.88rem;
+      color: var(--md-on-surface-variant);
+    }
+
+    .inbox-row-icon {
+      color: var(--md-primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Боковая панель иконок как у виджета Inbox */
+    .inbox-rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding-top: 4px;
+    }
+
+    @media (max-width: 540px) {
+      .inbox-rail {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .rail-fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      display: grid;
+      place-items: center;
+    }
+
+    .rail-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--md-primary);
+    }
+
+    /* Правый клеверный виджет как виджет с + с картинки */
+    .specs-clover-card {
+      background: var(--md-surface-container-low);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      transition: background-color var(--transition-ui);
+    }
+
+    .specs-clover-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+
+    .spec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .spec-line {
+      background: var(--md-surface-container);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .spec-line-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .spec-line-left .material-symbols-rounded {
+      color: var(--md-primary);
+    }
+
+    .spec-badge {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       FOOTER CTA
+    ========================================================= */
+    .footer-cta {
+      margin-top: 28px;
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      transition: background-color var(--transition-ui), color var(--transition-ui);
+    }
+
+    .footer-cta h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 900;
+    }
+
+    .footer-cta p {
+      opacity: 0.9;
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.85rem;
+      color: var(--md-on-surface-variant);
+    }
+  </style>
+</head>
+<body>
+  <!-- Мягкие обои Material You -->
+  <div class="wallpaper" aria-hidden="true">
+    <div class="wallpaper-blob blob-1"></div>
+    <div class="wallpaper-blob blob-2"></div>
+    <div class="wallpaper-blob blob-3"></div>
+  </div>
+
+  <div class="container">
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+    <header class="top-bar">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <span class="material-symbols-rounded">directions_car</span>
+        </div>
+        <div class="brand-title">Apex Drift</div>
+        <span class="brand-badge">v1.0-beta</span>
+      </a>
+
+      <div class="theme-controls">
+        <div class="palette-picker" title="Выбрать цвет темы">
+          <button class="swatch active" data-color="green" aria-label="Зелёная тема (по умолчанию)"></button>
+          <button class="swatch" data-color="purple" aria-label="Лавандовая тема"></button>
+          <button class="swatch" data-color="blue" aria-label="Синяя тема"></button>
+          <button class="swatch" data-color="orange" aria-label="Оранжевая тема"></button>
+          <button class="swatch" data-color="rose" aria-label="Розовая тема"></button>
+        </div>
+
+        <button class="mode-toggle" id="modeToggle" type="button">
+          <span class="material-symbols-rounded" id="modeIcon">dark_mode</span>
+          <span id="modeText">Тёмная тема</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="hero-grid">
+      <div class="widget-card hero-main">
+        <div>
+          <div class="hero-pill-tag">
+            <span class="material-symbols-rounded" style="font-size:18px;">smartphone</span>
+            Игра для телефона • APK 20 МБ
+          </div>
+
+          <h1 class="hero-title">
+            Мобильный дрифт в <span>Apex Drift</span>
+          </h1>
+
+          <p class="hero-desc">
+            Лёгкая игра про машинки для телефона. В самой игре можно прокачивать и апгрейдить свои машины, менять их стиль, а также регулировать скорость поворота руля в настройках. Для установки нужно всего 50 МБ памяти.
+          </p>
+        </div>
+
+        <div class="download-row">
+          <a
+            href="https://github.com/exploorer/ApexDrift/releases/download/v1.0-beta/ApexDrift1.0-beta.apk"
+            class="btn-download"
+          >
+            <span class="material-symbols-rounded">download</span>
+            Скачать APK (20 МБ)
+          </a>
+
+          <a href="#about-game" class="btn-secondary">
+            <span class="material-symbols-rounded">info</span>
+            Что есть в игре
+          </a>
+        </div>
+      </div>
+
+      <!-- ПРАВАЯ КОЛОНКА С ВИДЖЕТАМИ MATERIAL YOU -->
+      <div class="widgets-stack">
+        <!-- Виджет: Память -->
+        <div class="blob-widget">
+          <div class="big-stat">50<span class="stat-unit"> МБ</span></div>
+          <div class="stat-label">Памяти на телефоне</div>
+        </div>
+
+        <!-- Виджет: Вес APK -->
+        <div class="dial-widget">
+          <div class="dial-marks">
+            <span class="m-top">APK</span>
+            <span class="m-right">v1</span>
+            <span class="m-bottom">20</span>
+            <span class="m-left">МБ</span>
+          </div>
+          <div style="font-family: var(--font-display); font-size: 2.35rem; font-weight: 900; line-height: 1;">20</div>
+          <div style="font-weight: 800; font-size: 0.9rem;">МБ файл</div>
+          <div style="font-size: 0.72rem; opacity: 0.85; margin-top: 2px;">Быстрая загрузка</div>
+        </div>
+
+        <!-- Виджет: Прямая ссылка (в стиле Drive) -->
+        <a
+          href="https://github.com/exploorer/ApexDrift/releases/download/v1.0-beta/ApexDrift1.0-beta.apk"
+          class="apk-pill-widget"
+        >
+          <div class="apk-pill-info">
+            <span class="material-symbols-rounded">android</span>
+            <div>
+              <div class="apk-pill-title">ApexDrift1.0-beta.apk</div>
+              <div class="apk-pill-sub">Нажмите, чтобы скачать</div>
+            </div>
+          </div>
+          <div class="apk-pill-circle">
+            <span class="material-symbols-rounded">arrow_downward</span>
+          </div>
+        </a>
+
+        <!-- Виджет-дуо -->
+        <div class="specs-duo-widget">
+          <div class="spec-tile">
+            <span class="material-symbols-rounded">build</span>
+            <strong>Апгрейд машин</strong>
+            <span>Прокачка внутри игры</span>
+          </div>
+          <div class="spec-tile">
+            <span class="material-symbols-rounded">palette</span>
+            <strong>Смена стиля</strong>
+            <span>Настройка вида авто</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ЧТО ЕСТЬ В ИГРЕ -->
+    <div class="section-header" id="about-game">
+      <h2 class="section-title">Что есть в самой игре</h2>
+      <p class="section-subtitle">Основные возможности Apex Drift, которые ждут тебя после установки</p>
+    </div>
+
+    <section class="info-layout">
+      <!-- Виджет в стиле Inbox с картинки -->
+      <div class="inbox-widget">
+        <div class="inbox-list">
+          <div class="inbox-head">Возможности Apex Drift (3)</div>
+
+          <div class="inbox-row">
+            <div>
+              <h3>Прокачка и апгрейд машин</h3>
+              <p>В самой игре можно прокачивать свои машинки и делать апгрейды, чтобы они лучше ехали и держались в заносе.</p>
+            </div>
+            <span class="material-symbols-rounded inbox-row-icon">upgrade</span>
+          </div>
+
+          <div class="inbox-row">
+            <div>
+              <h3>Смена стиля авто</h3>
+              <p>Прямо в игре можно менять стиль своих машин и настраивать их внешний вид так, как нравится тебе.</p>
+            </div>
+            <span class="material-symbols-rounded inbox-row-icon">brush</span>
+          </div>
+
+          <div class="inbox-row">
+            <div>
+              <h3>Настройка скорости поворота руля</h3>
+              <p>В настройках игры можно изменить скорость поворота руля, чтобы подобрать максимально удобное управление под себя.</p>
+            </div>
+            <span class="material-symbols-rounded inbox-row-icon">tune</span>
+          </div>
+        </div>
+
+        <div class="inbox-rail" aria-hidden="true">
+          <div class="rail-fab">
+            <span class="material-symbols-rounded">sports_motorsports</span>
+          </div>
+          <div class="rail-icon">
+            <span class="material-symbols-rounded">build</span>
+          </div>
+          <div class="rail-icon">
+            <span class="material-symbols-rounded">palette</span>
+          </div>
+          <div class="rail-icon">
+            <span class="material-symbols-rounded">settings</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Сводка требований -->
+      <div class="specs-clover-card">
+        <div>
+          <h3>Требования для телефона</h3>
+          <p style="font-size: 0.88rem; color: var(--md-on-surface-variant); margin-top: 4px;">
+            Игра занимает минимум места и быстро скачивается даже по мобильному интернету.
+          </p>
+        </div>
+
+        <div class="spec-list">
+          <div class="spec-line">
+            <div class="spec-line-left">
+              <span class="material-symbols-rounded">sd_storage</span>
+              <span>Нужно памяти</span>
+            </div>
+            <span class="spec-badge">50 МБ</span>
+          </div>
+
+          <div class="spec-line">
+            <div class="spec-line-left">
+              <span class="material-symbols-rounded">folder_zip</span>
+              <span>Размер APK файла</span>
+            </div>
+            <span class="spec-badge">20 МБ</span>
+          </div>
+
+          <div class="spec-line">
+            <div class="spec-line-left">
+              <span class="material-symbols-rounded">new_releases</span>
+              <span>Версия игры</span>
+            </div>
+            <span class="spec-badge">v1.0-beta</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- НИЖНИЙ БЛОК СКАЧИВАНИЯ -->
+    <section class="footer-cta">
+      <div>
+        <h2>Скачать Apex Drift на телефон</h2>
+        <p>APK файл 20 МБ • Для работы нужно 50 МБ свободной памяти</p>
+      </div>
+      <a
+        href="https://github.com/exploorer/ApexDrift/releases/download/v1.0-beta/ApexDrift1.0-beta.apk"
+        class="btn-download"
+      >
+        <span class="material-symbols-rounded">download_for_offline</span>
+        Скачать ApexDrift1.0-beta.apk
+      </a>
+    </section>
+
+    <p class="footer-note">
+      Apex Drift • v1.0-beta • Material You Design
+    </p>
+  </div>
+
+  <script>
+    const htmlEl = document.documentElement;
+    const swatches = document.querySelectorAll('.swatch');
+    const modeToggle = document.getElementById('modeToggle');
+    const modeIcon = document.getElementById('modeIcon');
+    const modeText = document.getElementById('modeText');
+
+    // Смена цвета темы (по умолчанию зелёный)
+    swatches.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        swatches.forEach((s) => s.classList.remove('active'));
+        btn.classList.add('active');
+        htmlEl.setAttribute('data-theme', btn.dataset.color);
+      });
+    });
+
+    // Смена светлого / тёмного стиля
+    modeToggle.addEventListener('click', () => {
+      const currentMode = htmlEl.getAttribute('data-mode');
+      const nextMode = currentMode === 'light' ? 'dark' : 'light';
+      htmlEl.setAttribute('data-mode', nextMode);
+
+      if (nextMode === 'dark') {
+        modeIcon.textContent = 'light_mode';
+        modeText.textContent = 'Светлая тема';
+      } else {
+        modeIcon.textContent = 'dark_mode';
+        modeText.textContent = 'Тёмная тема';
+      }
+    });
+  </script>
+</body>
+</html>
